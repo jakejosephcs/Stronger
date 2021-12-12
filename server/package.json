@@ -13,6 +13,7 @@
     "nodemon": "^2.0.15"
   },
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "express": "^4.17.1",
     "joi": "^17.5.0"
   }
