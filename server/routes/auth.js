@@ -8,7 +8,7 @@ require("dotenv").config();
 
 // Importing required files
 const User = require("../models/User");
-const { signupValidation } = require("../validation");
+const { authValidation } = require("../validation");
 
 // Creating a router using express
 const router = express.Router();
@@ -16,7 +16,7 @@ const router = express.Router();
 // Signing a user up
 router.post("/signup", async (req, res) => {
   // Input validation using Joi
-  const { error } = signupValidation(req.body);
+  const { error } = authValidation(req.body);
   if (error) return res.status(400).send({ error: error.details[0].message });
 
   const { email, password } = req.body;
@@ -44,9 +44,30 @@ router.post("/signup", async (req, res) => {
   } catch (error) {
     res.status(500).json(error);
   }
+});
 
-  // # TO DO
-  // - Add JWT
+// Logging in a user
+router.post("/login", async (req, res) => {
+  // Input validation using Joi
+  const { error } = authValidation(req.body);
+  if (error) return res.status(400).send({ error: error.details[0].message });
+
+  const { email, password } = req.body;
+
+  // Get the user from the database
+  const user = await User.findOne({ email });
+  if (!user)
+    return res.status(400).json({ error: "Invalid email or passwordd" });
+
+  // Checking if the password provided is correct
+  const isUserPasswordCorrect = await bcrypt.compare(password, user.password);
+  if (!isUserPasswordCorrect)
+    return res.status(400).json({ error: "Invalid email or password" });
+
+  // Create and assign a JWT token
+  const token = JWT.sign({ _id: user._id }, process.env.SECRET_KEY);
+
+  res.json({ token });
 });
 
 module.exports = router;
