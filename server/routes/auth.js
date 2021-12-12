@@ -21,10 +21,10 @@ router.post("/signup", async (req, res) => {
 
   const { email, password } = req.body;
 
-  //   // Checking if the user's email is already inside the database
-  //   const emailExists = await User.findOne({ email });
-  //   if (emailExists)
-  //     return res.status(400).send({ error: "Email already exists" });
+  // Checking if the user's email is already inside the database
+  const emailExists = await User.findOne({ email });
+  if (emailExists)
+    return res.status(400).send({ error: "Email already exists" });
 
   try {
     // Hashing the password
@@ -40,7 +40,7 @@ router.post("/signup", async (req, res) => {
     // Save user to the database
     const user = await newUser.save();
 
-    res.json({ user, token });
+    res.json(user);
   } catch (error) {
     res.status(500).json(error);
   }
