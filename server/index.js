@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const authRoute = require("./routes/auth");
 const userRoute = require("./routes/user");
 const exerciseRoute = require("./routes/exercise");
+const workoutRoute = require("./routes/workout");
 
 const app = express();
 
@@ -16,6 +17,7 @@ mongoose.connect(process.env.MONGODB_CONNECTION, () => {
 app.use("/auth", authRoute);
 app.use("/users", userRoute);
 app.use("/exercises", exerciseRoute);
+app.use("/workouts", workoutRoute);
 
 app.listen(5000, () => {
   console.log("Server listening on PORT 5000");
