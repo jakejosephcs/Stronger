@@ -1,3 +1,7 @@
+// #TO DO:
+// - Create reusable hooks that can be used between log in and sign up
+// - Add logic to handle error, loading and success states
+
 import { useState } from "react";
 import axios from "axios";
 
@@ -39,13 +43,14 @@ export default function RegistrationForum() {
             Email
           </label>
           <input
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline invalid:border-red-500"
             id="email"
             type="email"
             placeholder="example@mail.com"
             name="email"
             value={user.email}
             onChange={handleUserChange}
+            required
           />
         </div>
         <div className="mb-6">
@@ -56,15 +61,16 @@ export default function RegistrationForum() {
             Password
           </label>
           <input
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline invalid:border-red-500"
             id="password"
             type="password"
             placeholder="******************"
             name="password"
             value={user.password}
             onChange={handleUserChange}
+            required
+            minLength="6"
           />
-          {/* <p className="text-red-500 text-xs italic">Please choose a password.</p> */}
         </div>
         <div className="flex items-center justify-between">
           <input
