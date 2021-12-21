@@ -1,13 +1,17 @@
-import React from "react";
+import { Link } from "react-router-dom";
 
 function Home() {
   return (
     <div>
       <div>
-        <button>Start a new workout</button>
+        <Link to="/workout">
+          <button>Start a new workout</button>
+        </Link>
       </div>
       <div>
-        <button>View your exercises</button>
+        <Link to="/exercises">
+          <button>View your exercises</button>
+        </Link>
       </div>
       <h1>Completed workouts</h1>
       <div>
