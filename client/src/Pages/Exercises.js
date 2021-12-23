@@ -1,14 +1,17 @@
-import React from "react";
-import Header from "../Components/Header";
-import Footer from "../Components/Footer";
-import Exercises from "../Components/Exercises";
+import { useState } from "react";
 
 function Exercise() {
   return (
     <div>
-      <Header />
-      <Exercises />
-      <Footer />
+      <div>
+        <button>Create a new exercise</button>
+        <div>
+          <h1>All exercises</h1>
+          <div>Deadlift</div>
+          <div>Bench Press</div>
+          <div>Squat</div>
+        </div>
+      </div>
     </div>
   );
 }
