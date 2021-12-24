@@ -11,13 +11,13 @@ function Landing() {
   let buttonsToRender = (isUserLoggedIn) => {
     if (!isUserLoggedIn) {
       return (
-        <section>
-          <div>
+        <section className="mb-10">
+          <div className="bg-blue-500 text-white py-2 px-5 rounded-full text-center mb-4">
             <button>
               <Link to="/registration">Register</Link>
             </button>
           </div>
-          <div>
+          <div className="bg-blue-500 text-white py-2 px-5 rounded-full text-center">
             <button>
               <Link to="/login">Login</Link>
             </button>
@@ -26,8 +26,8 @@ function Landing() {
       );
     }
     return (
-      <section>
-        <div>
+      <section className="mb-10">
+        <div className="bg-blue-500 text-white py-2 px-5 rounded-full text-center">
           <Link to="/home">Workout</Link>
         </div>
       </section>
@@ -35,31 +35,31 @@ function Landing() {
   };
 
   return (
-    <div>
-      <section>
-        <div>
-          Get <span>Stronger</span>
+    <div className="flex flex-col max-w-sm mx-auto items-center">
+      <section className="text-center tracking-widest mb-8">
+        <div className="text-3xl">
+          Get <span className="font-bold">Stronger</span>
         </div>
-        <div>Be Consistent</div>
-        <div>See Results</div>
+        <div className="text-3xl">Be Consistent</div>
+        <div className="text-3xl">See Results</div>
       </section>
       {buttonsToRender(token)}
       <section>
-        <div>
+        <div className="flex bg-slate-200 py-4 px-3 rounded mb-4">
           <NoteIcon />
-          <p>Track sets, reps and weight</p>
+          <p className="ml-4">Track sets, reps and weight</p>
         </div>
-        <div>
+        <div className="flex bg-slate-200 py-4 px-3 rounded mb-4">
           <CalenderIcon />
-          <p>View previous workouts</p>
+          <p className="ml-4">View previous workouts</p>
         </div>
-        <div>
+        <div className="flex bg-slate-200 py-4 px-3 rounded mb-4">
           <AddIcon />
-          <p>Add your own exercises</p>
+          <p className="ml-4">Add your own exercises</p>
         </div>
-        <div>
+        <div className="flex bg-slate-200 py-4 px-3 rounded mb-4">
           <GraphIcon />
-          <p>Comprehensive statistics</p>
+          <p className="ml-4">Comprehensive statistics</p>
         </div>
       </section>
     </div>
