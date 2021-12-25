@@ -96,19 +96,27 @@ function Exercise() {
 
       {isModalOpen && (
         <div className="bg-black bg-opacity-50 absolute inset-0 flex justify-center items-center">
-          <div className="bg-gray-200 max-w-sm flex flex-col">
+          <div className="bg-gray-200 max-w-sm flex flex-col mx-auto items-center px-6 py-6 relative rounded">
             <button
+              className="absolute top-2 right-2"
               onClick={() => setIsModalOpen((isModalOpen) => !isModalOpen)}
             >
               <CloseIcon />
             </button>
-            <h3>Create a new exercise</h3>
+            <h3 className="mt-2 font-bold mb-3">Create a new exercise</h3>
             <input
+              className="px-3 py-1 text-sm"
               type="text"
               value={newExerciseName}
               onChange={(e) => setNewExerciseName(e.target.value)}
+              placeholder="Exercise name"
             />
-            <button onClick={handleCreateNewExercise}>Create</button>
+            <button
+              onClick={handleCreateNewExercise}
+              className="mt-3 bg-blue-500 py-1 px-3 rounded-full text-gray-200"
+            >
+              Create
+            </button>
           </div>
         </div>
       )}
