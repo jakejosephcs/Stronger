@@ -7,12 +7,14 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import LinkIcon from "../Assests/LinkIcon";
 import DeleteIcon from "../Assests/DeleteIcon";
+import CloseIcon from "../Assests/CloseIcon";
 
 function Exercise() {
   const [exercises, setExercises] = useState([]);
   const [userId, setUserId] = useState("61c7934ca2da76efc8b719a6");
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newExerciseName, setNewExerciseName] = useState("");
 
   useEffect(() => {
     setIsLoading(true);
@@ -58,6 +60,22 @@ function Exercise() {
     ));
   };
 
+  const handleCreateNewExercise = () => {
+    const newExercise = {
+      userId: userId,
+      name: newExerciseName,
+      description: "test",
+      category: "test",
+    };
+
+    console.log(newExercise);
+
+    axios.post("http://localhost:5000/exercises/", newExercise).then((res) => {
+      setExercises((exercises) => exercises.concat(newExercise));
+      setIsModalOpen(false);
+    });
+  };
+
   return (
     <>
       <div className="flex flex-col max-w-sm mx-auto items-center">
@@ -78,10 +96,20 @@ function Exercise() {
 
       {isModalOpen && (
         <div className="bg-black bg-opacity-50 absolute inset-0 flex justify-center items-center">
-          <div className="bg-gray-200">this is my modal</div>
-          <button onClick={() => setIsModalOpen((isModalOpen) => !isModalOpen)}>
-            Close modal
-          </button>
+          <div className="bg-gray-200 max-w-sm flex flex-col">
+            <button
+              onClick={() => setIsModalOpen((isModalOpen) => !isModalOpen)}
+            >
+              <CloseIcon />
+            </button>
+            <h3>Create a new exercise</h3>
+            <input
+              type="text"
+              value={newExerciseName}
+              onChange={(e) => setNewExerciseName(e.target.value)}
+            />
+            <button onClick={handleCreateNewExercise}>Create</button>
+          </div>
         </div>
       )}
     </>
