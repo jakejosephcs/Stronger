@@ -12,6 +12,7 @@ function Exercise() {
   const [exercises, setExercises] = useState([]);
   const [userId, setUserId] = useState("61c7934ca2da76efc8b719a6");
   const [isLoading, setIsLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
@@ -58,16 +59,32 @@ function Exercise() {
   };
 
   return (
-    <div className="flex flex-col max-w-sm mx-auto items-center">
-      <div className="flex bg-slate-200 py-2 px-3 rounded mb-12">
-        <LinkIcon />
-        <button className="ml-1">Create a new exercise</button>
+    <>
+      <div className="flex flex-col max-w-sm mx-auto items-center">
+        <div className="flex bg-slate-200 py-2 px-3 rounded mb-12">
+          <LinkIcon />
+          <button
+            className="ml-1"
+            onClick={() => setIsModalOpen((isModalOpen) => !isModalOpen)}
+          >
+            Create a new exercise
+          </button>
+        </div>
+        <div className="flex flex-col items-center">
+          <h1 className="text-2xl font-bold mb-4">All exercises</h1>
+          {isLoading ? <p>Loading...</p> : displayExercises()}
+        </div>
       </div>
-      <div className="flex flex-col items-center">
-        <h1 className="text-2xl font-bold mb-4">All exercises</h1>
-        {isLoading ? <p>Loading...</p> : displayExercises()}
-      </div>
-    </div>
+
+      {isModalOpen && (
+        <div className="bg-black bg-opacity-50 absolute inset-0 flex justify-center items-center">
+          <div className="bg-gray-200">this is my modal</div>
+          <button onClick={() => setIsModalOpen((isModalOpen) => !isModalOpen)}>
+            Close modal
+          </button>
+        </div>
+      )}
+    </>
   );
 }
 
