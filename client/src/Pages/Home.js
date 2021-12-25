@@ -1,81 +1,62 @@
 import { Link } from "react-router-dom";
+import CalenderIcon from "../Assests/CalenderIcon";
+import LinkIcon from "../Assests/LinkIcon";
+import TrashIcon from "../Assests/TrashIcon";
 
 function Home() {
   return (
-    <div>
-      <div>
+    <div className="flex flex-col max-w-sm items-center mx-auto">
+      <div className="flex bg-slate-200 py-2 px-3 rounded mb-4">
+        <LinkIcon />
         <Link to="/workout">
-          <button>Start a new workout</button>
+          <button className="ml-1">Start a new workout</button>
         </Link>
       </div>
-      <div>
+      <div className="flex bg-slate-200 py-2 px-3 rounded mb-12">
+        <LinkIcon />
         <Link to="/exercises">
-          <button>View your exercises</button>
+          <button className="ml-1">View your exercises</button>
         </Link>
       </div>
-      <h1>Completed workouts</h1>
-      <div>
-        <div>
-          <h3>Workout name</h3>
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 20 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M9 2C8.81434 2.0001 8.63237 2.05188 8.47447 2.14955C8.31658 2.24722 8.18899 2.38692 8.106 2.553L7.382 4H4C3.73478 4 3.48043 4.10536 3.29289 4.29289C3.10536 4.48043 3 4.73478 3 5C3 5.26522 3.10536 5.51957 3.29289 5.70711C3.48043 5.89464 3.73478 6 4 6V16C4 16.5304 4.21071 17.0391 4.58579 17.4142C4.96086 17.7893 5.46957 18 6 18H14C14.5304 18 15.0391 17.7893 15.4142 17.4142C15.7893 17.0391 16 16.5304 16 16V6C16.2652 6 16.5196 5.89464 16.7071 5.70711C16.8946 5.51957 17 5.26522 17 5C17 4.73478 16.8946 4.48043 16.7071 4.29289C16.5196 4.10536 16.2652 4 16 4H12.618L11.894 2.553C11.811 2.38692 11.6834 2.24722 11.5255 2.14955C11.3676 2.05188 11.1857 2.0001 11 2H9ZM7 8C7 7.73478 7.10536 7.48043 7.29289 7.29289C7.48043 7.10536 7.73478 7 8 7C8.26522 7 8.51957 7.10536 8.70711 7.29289C8.89464 7.48043 9 7.73478 9 8V14C9 14.2652 8.89464 14.5196 8.70711 14.7071C8.51957 14.8946 8.26522 15 8 15C7.73478 15 7.48043 14.8946 7.29289 14.7071C7.10536 14.5196 7 14.2652 7 14V8ZM12 7C11.7348 7 11.4804 7.10536 11.2929 7.29289C11.1054 7.48043 11 7.73478 11 8V14C11 14.2652 11.1054 14.5196 11.2929 14.7071C11.4804 14.8946 11.7348 15 12 15C12.2652 15 12.5196 14.8946 12.7071 14.7071C12.8946 14.5196 13 14.2652 13 14V8C13 7.73478 12.8946 7.48043 12.7071 7.29289C12.5196 7.10536 12.2652 7 12 7Z"
-              fill="#EF4444"
-            />
-          </svg>
-          <div>
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M6.66667 5.83333V2.5V5.83333ZM13.3333 5.83333V2.5V5.83333ZM5.83333 9.16667H14.1667H5.83333ZM4.16667 17.5H15.8333C16.2754 17.5 16.6993 17.3244 17.0118 17.0118C17.3244 16.6993 17.5 16.2754 17.5 15.8333V5.83333C17.5 5.39131 17.3244 4.96738 17.0118 4.65482C16.6993 4.34226 16.2754 4.16667 15.8333 4.16667H4.16667C3.72464 4.16667 3.30072 4.34226 2.98816 4.65482C2.67559 4.96738 2.5 5.39131 2.5 5.83333V15.8333C2.5 16.2754 2.67559 16.6993 2.98816 17.0118C3.30072 17.3244 3.72464 17.5 4.16667 17.5Z"
-                stroke="black"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-            <span>12/31/2021</span>
-          </div>
+      <h1 className="text-2xl font-bold mb-4">Completed workouts</h1>
+      <div className="bg-slate-200 px-4 py-4 rounded mx-3">
+        <div className="flex justify-between">
+          <h3 className="font-semibold">Workout name</h3>
+          <TrashIcon />
+        </div>
+        <div className="flex">
+          <CalenderIcon />
+          <span>12/31/2021</span>
         </div>
         <table>
-          <tr>
-            <th>Sets</th>
-            <th>Exercises</th>
-            <th>Total Weight</th>
-          </tr>
-          <tr>
-            <td>1</td>
-            <td>Bench Press</td>
-            <td>250lbs</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>Bench Press</td>
-            <td>250lbs</td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td>Overhead Tricep Extensions</td>
-            <td>25lbs</td>
-          </tr>
-          <tr>
-            <td>Island Trading</td>
-            <td>Helen Bennett</td>
-            <td>UK</td>
-          </tr>
+          <thead>
+            <tr>
+              <th className="border-2 border-orange-600 p-1">Sets</th>
+              <th className="border-2 border-orange-600 text-left p-1">
+                Exercises
+              </th>
+              <th className="border-2 border-orange-600 p-1">Total Weight</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td className="border-2 border-orange-600 text-center p-1">1</td>
+              <td className="border-2 border-orange-600 p-1">Bench Press</td>
+              <td className="border-2 border-orange-600 p-1">250lbs</td>
+            </tr>
+            <tr>
+              <td className="border-2 border-orange-600 text-center p-1">2</td>
+              <td className="border-2 border-orange-600 p-1">Bench Press</td>
+              <td className="border-2 border-orange-600 p-1">250lbs</td>
+            </tr>
+            <tr>
+              <td className="border-2 border-orange-600 text-center p-1">3</td>
+              <td className="border-2 border-orange-600 p-1">
+                Overhead Tricep Extensions
+              </td>
+              <td className="border-2 border-orange-600 p-1">25lbs</td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
