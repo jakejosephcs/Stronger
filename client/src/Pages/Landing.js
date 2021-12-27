@@ -1,27 +1,30 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router";
 import AddIcon from "../Assests/AddIcon";
 import CalenderIcon from "../Assests/CalenderIcon";
 import GraphIcon from "../Assests/GraphIcon";
 import NoteIcon from "../Assests/NoteIcon";
 
 function Landing() {
-  const [token, setToken] = useState("");
+  const [token, setToken] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const localStorageToken = localStorage.getItem("token");
-    if (localStorageToken) {
+    if (localStorageToken !== null) {
       setToken(localStorageToken);
     }
   }, []);
 
   const clearLocalStorage = () => {
     localStorage.setItem("token", null);
-    setToken("");
+    setToken(null);
+    navigate("/login");
   };
 
-  const buttonsToRender = (isUserLoggedIn) => {
-    if (!isUserLoggedIn) {
+  const buttonsToRender = (userToken) => {
+    if (userToken === "null") {
       return (
         <section className="mb-10">
           <div className="bg-blue-500 text-white py-2 px-5 rounded-full text-center mb-4">
