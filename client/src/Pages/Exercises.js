@@ -45,6 +45,10 @@ function Exercise() {
   };
 
   const displayExercises = () => {
+    if (exercises.length === 0) {
+      return <p className="my-6 text-slate-500 text-sm">0 exercises exist</p>;
+    }
+
     return exercises.map((exercise) => (
       <div
         key={exercise._id}
@@ -67,8 +71,6 @@ function Exercise() {
       description: "test",
       category: "test",
     };
-
-    console.log(newExercise);
 
     axios.post("http://localhost:5000/exercises/", newExercise).then((res) => {
       setExercises((exercises) => exercises.concat(newExercise));
