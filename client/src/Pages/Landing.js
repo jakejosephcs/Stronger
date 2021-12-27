@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import AddIcon from "../Assests/AddIcon";
 import CalenderIcon from "../Assests/CalenderIcon";
@@ -6,7 +6,14 @@ import GraphIcon from "../Assests/GraphIcon";
 import NoteIcon from "../Assests/NoteIcon";
 
 function Landing() {
-  const [token, setToken] = useState(true);
+  const [token, setToken] = useState("");
+
+  useEffect(() => {
+    const localStorageToken = localStorage.getItem("token");
+    if (localStorageToken) {
+      setToken(localStorageToken);
+    }
+  }, []);
 
   let buttonsToRender = (isUserLoggedIn) => {
     if (!isUserLoggedIn) {
@@ -57,7 +64,10 @@ function Landing() {
           <AddIcon />
           <p className="ml-4">Add your own exercises</p>
         </div>
-        <div className="flex bg-slate-200 py-4 px-3 rounded mb-4">
+        <div className="flex bg-slate-200 py-4 px-3 rounded mb-4 relative">
+          <span className="absolute top-0 right-0 text-xs bg-blue-300 text-white rounded-bl-full px-2">
+            coming soon
+          </span>
           <GraphIcon />
           <p className="ml-4">Comprehensive statistics</p>
         </div>
