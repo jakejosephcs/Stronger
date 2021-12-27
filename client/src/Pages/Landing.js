@@ -15,7 +15,12 @@ function Landing() {
     }
   }, []);
 
-  let buttonsToRender = (isUserLoggedIn) => {
+  const clearLocalStorage = () => {
+    localStorage.setItem("token", null);
+    setToken("");
+  };
+
+  const buttonsToRender = (isUserLoggedIn) => {
     if (!isUserLoggedIn) {
       return (
         <section className="mb-10">
@@ -34,8 +39,11 @@ function Landing() {
     }
     return (
       <section className="mb-10">
-        <div className="bg-blue-500 text-white py-2 px-5 rounded-full text-center">
+        <div className="bg-blue-500 text-white py-2 px-5 rounded-full text-center mb-4">
           <Link to="/home">Workout</Link>
+        </div>
+        <div className="bg-red-500 text-white py-2 px-5 rounded-full text-center mb-4">
+          <button onClick={clearLocalStorage}>Logout</button>
         </div>
       </section>
     );
