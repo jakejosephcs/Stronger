@@ -15,6 +15,7 @@ function LoginForum() {
   });
   const navigate = useNavigate();
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleUserChange = (e) => {
     setError("");
@@ -25,6 +26,7 @@ function LoginForum() {
   };
 
   const handleFormSubmit = (e) => {
+    setIsLoading(true);
     e.preventDefault();
     axios
       .post("http://localhost:5000/auth/login", {
@@ -34,8 +36,12 @@ function LoginForum() {
       .then((res) => {
         localStorage.setItem("token", res.data.token);
         navigate("/");
+        setIsLoading(false);
       })
-      .catch((err) => setError(err.response.data));
+      .catch((err) => {
+        setError(err.response.data);
+        setIsLoading(false);
+      });
   };
 
   return (
@@ -87,7 +93,7 @@ function LoginForum() {
         <input
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline hover:cursor-pointer"
           type="submit"
-          value="Log In"
+          value={isLoading ? "..." : "Log In"}
         />
       </div>
     </form>
