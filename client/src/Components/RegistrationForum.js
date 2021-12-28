@@ -13,6 +13,7 @@ export default function RegistrationForum() {
   });
   const navigate = useNavigate();
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleUserChange = (e) => {
     setError("");
@@ -23,14 +24,22 @@ export default function RegistrationForum() {
   };
 
   const handleFormSubmit = (e) => {
+    setIsLoading(true);
+
     e.preventDefault();
     axios
       .post("http://localhost:5000/auth/signup", {
         email: user.email,
         password: user.password,
       })
-      .then((res) => navigate("/"))
-      .catch((err) => setError(err.response.data));
+      .then((res) => {
+        setIsLoading(false);
+        navigate("/");
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        setError(err.response.data);
+      });
   };
 
   return (
@@ -82,7 +91,7 @@ export default function RegistrationForum() {
         <input
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline hover:cursor-pointer"
           type="submit"
-          value="Sign Up"
+          value={isLoading ? "..." : "Sign up"}
         />
       </div>
     </form>
