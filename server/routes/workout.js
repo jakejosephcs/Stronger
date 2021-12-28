@@ -22,11 +22,16 @@ router.post("/", async (req, res) => {
   });
 
   try {
+    // Save the new workout
     const savedWorkout = await newWorkout.save();
 
+    // Add the workout to the user's workout array
     const user = await User.findById(userId);
     user.workouts.push(savedWorkout);
     await user.save();
+
+    // Add the workout to each exercise's workout array
+    // -- Do i need this?
 
     res.json(savedWorkout);
   } catch (error) {
@@ -86,14 +91,15 @@ router.delete("/:id", async (req, res) => {
     await user.save();
 
     // Remove all workouts from each exercise's workout array
-    workout.exercises.map(async (exercise) => {
-      const foundExercise = await Exercise.findById(exercise.exerciseId);
-      if (!foundExercise) {
-        return res.status(400).send("Exercise already deleted");
-      }
-      foundExercise.workouts.pull(workoutId);
-      await foundExercise.save();
-    });
+    // -- Do i need this? Haven't workouts to the exercise's workout array
+    // workout.exercises.map(async (exercise) => {
+    //   const foundExercise = await Exercise.findById(exercise.exerciseId);
+    //   if (!foundExercise) {
+    //     return res.status(400).send("Exercise already deleted");
+    //   }
+    //   foundExercise.workouts.pull(workoutId);
+    //   await foundExercise.save();
+    // });
 
     // Delete the workout
     await Workout.deleteOne({ _id: workoutId });
