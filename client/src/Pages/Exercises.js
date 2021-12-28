@@ -16,6 +16,7 @@ function Exercise() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newExerciseName, setNewExerciseName] = useState("");
   const [error, setError] = useState("");
+  const [isCreateExerciseLoading, setIsCreateExerciseLoading] = useState(false);
 
   useEffect(() => {
     setIsExercisesLoading(true);
@@ -66,6 +67,7 @@ function Exercise() {
   };
 
   const handleCreateNewExercise = () => {
+    setIsCreateExerciseLoading(true);
     const newExercise = {
       userId: userId,
       name: newExerciseName.toLowerCase(),
@@ -78,8 +80,14 @@ function Exercise() {
       .then((res) => {
         setExercises((exercises) => exercises.concat(newExercise));
         setIsModalOpen(false);
+        setIsCreateExerciseLoading(false);
+        setNewExerciseName("");
       })
-      .catch((err) => setError(err.response.data));
+      .catch((err) => {
+        setError(err.response.data);
+        setIsCreateExerciseLoading(false);
+        setNewExerciseName("");
+      });
   };
 
   return (
@@ -127,7 +135,7 @@ function Exercise() {
               onClick={handleCreateNewExercise}
               className="mt-3 bg-blue-500 py-1 px-3 rounded-full text-gray-200"
             >
-              Create
+              {isCreateExerciseLoading ? "Creating..." : "Create"}
             </button>
           </div>
         </div>
