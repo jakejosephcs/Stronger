@@ -11,20 +11,21 @@ import CloseIcon from "../Assests/CloseIcon";
 
 function Exercise() {
   const [exercises, setExercises] = useState([]);
-  const [userId, setUserId] = useState("61c7934ca2da76efc8b719a6");
-  const [isLoading, setIsLoading] = useState(false);
+  const [userId, setUserId] = useState("61ca404e5a56d8505f193391");
+  const [isExercisesLoading, setIsExercisesLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newExerciseName, setNewExerciseName] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    setIsLoading(true);
+    setIsExercisesLoading(true);
     axios.get("http://localhost:5000/exercises/").then((res) => {
       const allExercises = res.data;
       const userExercises = allExercises.filter(
         (exercise) => exercise.userId === userId
       );
       setExercises(userExercises);
-      setIsLoading(false);
+      setIsExercisesLoading(false);
     });
   }, []);
 
@@ -67,15 +68,18 @@ function Exercise() {
   const handleCreateNewExercise = () => {
     const newExercise = {
       userId: userId,
-      name: newExerciseName,
+      name: newExerciseName.toLowerCase(),
       description: "test",
       category: "test",
     };
 
-    axios.post("http://localhost:5000/exercises/", newExercise).then((res) => {
-      setExercises((exercises) => exercises.concat(newExercise));
-      setIsModalOpen(false);
-    });
+    axios
+      .post("http://localhost:5000/exercises/", newExercise)
+      .then((res) => {
+        setExercises((exercises) => exercises.concat(newExercise));
+        setIsModalOpen(false);
+      })
+      .catch((err) => setError(err.response.data));
   };
 
   return (
@@ -92,7 +96,7 @@ function Exercise() {
         </div>
         <div className="flex flex-col items-center">
           <h1 className="text-2xl font-bold mb-4">All exercises</h1>
-          {isLoading ? <p>Loading...</p> : displayExercises()}
+          {isExercisesLoading ? <p>Loading...</p> : displayExercises()}
         </div>
       </div>
 
@@ -106,11 +110,17 @@ function Exercise() {
               <CloseIcon />
             </button>
             <h3 className="mt-2 font-bold mb-3">Create a new exercise</h3>
+            <span className="text-xs flex justify-center mb-2 text-red-500">
+              {error}
+            </span>
             <input
               className="px-3 py-1 text-sm"
               type="text"
               value={newExerciseName}
-              onChange={(e) => setNewExerciseName(e.target.value)}
+              onChange={(e) => {
+                setNewExerciseName(e.target.value);
+                setError("");
+              }}
               placeholder="Exercise name"
             />
             <button
