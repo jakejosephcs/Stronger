@@ -58,31 +58,50 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// Add an exercise to a workout
-router.post("/exercise/", async (req, res) => {
-  // const { exerciseId, workoutId, sets, reps, weights } = req.body;
-  // sets: Number
-  // reps: [Number, Number, ... , Number]
-  // weight: [Number, Number, ... , Number]
-  // try {
-  //   const exercise = await Exercise.findById(exerciseId);
-  //   const workout = await Workout.findById(workoutId);
-  //   workout.exercises.push(exercise);
-  //   await workout.save();
-  //   const newExercise = await Workout.findOne({
-  //     "exercise.id": exerciseId,
-  //   });
-  //   for (let i = 0; i < sets; i++) {
-  //     newExercise.exercises[newExercise.exercises.length - 1].sets.push({
-  //       reps: reps[i],
-  //       weight: weights[i],
-  //     });
-  //   }
-  //   await newExercise.save();
-  //   res.json(workout);
-  // } catch (error) {
-  //   res.status(500).json(error);
-  // }
+// Delete a workout
+router.delete("/:id", async (req, res) => {
+  const workoutId = req.params.id;
+  const { userId } = req.body;
+
+  try {
+    // Get the workout
+    const workout = await Workout.findById(workoutId);
+    if (!workout) {
+      return res.status(404).send("Workout does not exist");
+    }
+
+    // Check if the userId attached to the workout matched the user trying to delete it
+    if (!workout.userId.equals(userId)) {
+      return res
+        .status(400)
+        .send("Do not have permission to delete this exericse");
+    }
+
+    // Remove the workout id from the User's workout array
+    const user = User.findById(userId);
+    if (!user) {
+      return res.status(404).send("User does not exist");
+    }
+    user.workouts.pull(workoutId);
+    await user.save();
+
+    // Remove all workouts from each exercise's workout array
+    workout.exercises.map(async (exercise) => {
+      const foundExercise = await Exercise.findById(exercise.exerciseId);
+      if (!foundExercise) {
+        return res.status(400).send("Exercise already deleted");
+      }
+      foundExercise.workouts.pull(workoutId);
+      await foundExercise.save();
+    });
+
+    // Delete the workout
+    await Workout.deleteOne({ _id: workoutId });
+
+    res.send("deleted");
+  } catch (e) {
+    res.status(500).send(e);
+  }
 });
 
 module.exports = router;
