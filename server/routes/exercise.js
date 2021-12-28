@@ -18,6 +18,12 @@ router.post("/", async (req, res) => {
   });
 
   try {
+    // Find out if exercise already exists under the user
+    const foundExercise = await Exercise.findOne({ name });
+    if (foundExercise && foundExercise.userId.equals(userId)) {
+      return res.status(400).send("Exercise already exists");
+    }
+
     const savedExercise = await newExercise.save();
 
     const user = await User.findById(userId);
