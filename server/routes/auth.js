@@ -50,19 +50,18 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
   // Input validation using Joi
   const { error } = authValidation(req.body);
-  if (error) return res.status(400).send({ error: error.details[0].message });
+  if (error) return res.status(400).send(error.details[0].message);
 
   const { email, password } = req.body;
 
   // Get the user from the database
   const user = await User.findOne({ email });
-  if (!user)
-    return res.status(400).json({ error: "Invalid email or passwordd" });
+  if (!user) return res.status(400).send("Invalid email or password");
 
   // Checking if the password provided is correct
   const isUserPasswordCorrect = await bcrypt.compare(password, user.password);
   if (!isUserPasswordCorrect)
-    return res.status(400).json({ error: "Invalid email or password" });
+    return res.status(400).send("Invalid email or password");
 
   // Create and assign a JWT token
   const token = JWT.sign({ _id: user._id }, process.env.SECRET_KEY);
