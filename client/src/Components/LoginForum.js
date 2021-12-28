@@ -14,8 +14,10 @@ function LoginForum() {
     password: "",
   });
   const navigate = useNavigate();
+  const [error, setError] = useState("");
 
   const handleUserChange = (e) => {
+    setError("");
     setUser({
       ...user,
       [e.target.name]: e.target.value,
@@ -33,7 +35,7 @@ function LoginForum() {
         localStorage.setItem("token", res.data.token);
         navigate("/");
       })
-      .catch((err) => console.log(err));
+      .catch((err) => setError(err.response.data));
   };
 
   return (
@@ -41,6 +43,9 @@ function LoginForum() {
       className="bg-gray-200 shadow-md rounded px-8 pt-6 pb-8 mx-3"
       onSubmit={handleFormSubmit}
     >
+      <span className="text-xs flex justify-center mb-2 text-red-500">
+        {error ? error : " "}
+      </span>
       <div className="mb-4">
         <label
           className="block text-gray-700 text-sm font-bold mb-2"
@@ -49,7 +54,7 @@ function LoginForum() {
           Email
         </label>
         <input
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline invalid:border-red-500"
+          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-1 leading-tight focus:outline-none focus:shadow-outline invalid:border-red-500"
           id="email"
           type="email"
           placeholder="example@mail.com"
@@ -59,7 +64,7 @@ function LoginForum() {
           required
         />
       </div>
-      <div className="mb-6">
+      <div className="mb-4">
         <label
           className="block text-gray-700 text-sm font-bold mb-2"
           htmlFor="password"
@@ -67,7 +72,7 @@ function LoginForum() {
           Password
         </label>
         <input
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline invalid:border-red-500"
+          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700  leading-tight focus:outline-none focus:shadow-outline invalid:border-red-500"
           id="password"
           type="password"
           placeholder="******************"
