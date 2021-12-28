@@ -12,8 +12,10 @@ export default function RegistrationForum() {
     password: "",
   });
   const navigate = useNavigate();
+  const [error, setError] = useState("");
 
   const handleUserChange = (e) => {
+    setError("");
     setUser({
       ...user,
       [e.target.name]: e.target.value,
@@ -28,7 +30,7 @@ export default function RegistrationForum() {
         password: user.password,
       })
       .then((res) => navigate("/"))
-      .catch((err) => console.log(err));
+      .catch((err) => setError(err.response.data));
   };
 
   return (
@@ -36,6 +38,9 @@ export default function RegistrationForum() {
       className="bg-gray-200 shadow-md rounded px-8 pt-6 pb-8 mx-3"
       onSubmit={handleFormSubmit}
     >
+      <span className="text-xs flex justify-center mb-2 text-red-500">
+        {error}
+      </span>
       <div className="mb-4">
         <label
           className="block text-gray-700 text-sm font-bold mb-2"
