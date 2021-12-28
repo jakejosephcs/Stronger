@@ -83,7 +83,7 @@ router.delete("/:id", async (req, res) => {
     }
 
     // Remove the workout id from the User's workout array
-    const user = User.findById(userId);
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).send("User does not exist");
     }
