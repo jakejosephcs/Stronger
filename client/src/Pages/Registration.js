@@ -1,5 +1,4 @@
 import RegistrationForum from "../Components/RegistrationForum";
-import { Link } from "react-router-dom";
 import AuthHeader from "../Components/AuthHeader";
 
 function Registration() {
