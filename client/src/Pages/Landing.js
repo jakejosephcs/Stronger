@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Navigate, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import AddIcon from "../Assests/AddIcon";
 import CalenderIcon from "../Assests/CalenderIcon";
 import GraphIcon from "../Assests/GraphIcon";
@@ -23,32 +22,56 @@ function Landing() {
     navigate("/login");
   };
 
+  const buttonComponent = (text, onClick, color = "blue") => {
+    return (
+      <div
+        className={`bg-${color}-500 text-white py-2 px-5 rounded-full text-center mb-4`}
+      >
+        <button onClick={onClick}>{text}</button>
+      </div>
+    );
+  };
+
   const buttonsToRender = (userToken) => {
     if (userToken === "null") {
       return (
         <section className="mb-10">
-          <div className="bg-blue-500 text-white py-2 px-5 rounded-full text-center mb-4">
-            <button>
-              <Link to="/registration">Register</Link>
-            </button>
-          </div>
-          <div className="bg-blue-500 text-white py-2 px-5 rounded-full text-center">
-            <button>
-              <Link to="/login">Login</Link>
-            </button>
-          </div>
+          {buttonComponent("Registration", () => navigate("/registration"))}
+          {buttonComponent("Login", () => navigate("/login"))}
         </section>
       );
     }
     return (
       <section className="mb-10">
-        <div className="bg-blue-500 text-white py-2 px-5 rounded-full text-center mb-4">
-          <Link to="/home">Workout</Link>
-        </div>
-        <div className="bg-red-500 text-white py-2 px-5 rounded-full text-center mb-4">
-          <button onClick={clearLocalStorage}>Logout</button>
-        </div>
+        {buttonComponent("Workout", () => navigate("/home"))}
+        {buttonComponent("Logout", clearLocalStorage, "red")}
       </section>
+    );
+  };
+
+  const ICON_NAME = {
+    NoteIcon: NoteIcon,
+    CalenderIcon: CalenderIcon,
+    AddIcon: AddIcon,
+    GraphIcon: GraphIcon,
+  };
+
+  const featureCard = (iconName, featureText, isComingSoon = false) => {
+    const IconComponentName = ICON_NAME[iconName];
+    return (
+      <div
+        className={`flex bg-slate-200 py-4 px-3 rounded mb-4 ${
+          isComingSoon && "relative"
+        }`}
+      >
+        {isComingSoon && (
+          <span className="absolute top-0 right-0 text-xs bg-blue-300 text-white rounded-bl-full px-2">
+            coming soon
+          </span>
+        )}
+        <IconComponentName />
+        <p className="ml-4">{featureText}</p>
+      </div>
     );
   };
 
@@ -63,25 +86,10 @@ function Landing() {
       </section>
       {buttonsToRender(token)}
       <section>
-        <div className="flex bg-slate-200 py-4 px-3 rounded mb-4">
-          <NoteIcon />
-          <p className="ml-4">Track sets, reps and weight</p>
-        </div>
-        <div className="flex bg-slate-200 py-4 px-3 rounded mb-4">
-          <CalenderIcon />
-          <p className="ml-4">View previous workouts</p>
-        </div>
-        <div className="flex bg-slate-200 py-4 px-3 rounded mb-4">
-          <AddIcon />
-          <p className="ml-4">Add your own exercises</p>
-        </div>
-        <div className="flex bg-slate-200 py-4 px-3 rounded mb-4 relative">
-          <span className="absolute top-0 right-0 text-xs bg-blue-300 text-white rounded-bl-full px-2">
-            coming soon
-          </span>
-          <GraphIcon />
-          <p className="ml-4">Comprehensive statistics</p>
-        </div>
+        {featureCard("NoteIcon", "Track sets, reps and weight")}
+        {featureCard("CalenderIcon", "View previous workouts")}
+        {featureCard("AddIcon", "Add your own exercises")}
+        {featureCard("GraphIcon", "Comprehensive statistics", true)}
       </section>
     </div>
   );
