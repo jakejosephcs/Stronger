@@ -1,12 +1,13 @@
 import LoginForum from "../Components/LoginForum";
 import AuthHeader from "../Components/AuthHeader";
+import Container from "../Components/Container";
 
 function Login() {
   return (
-    <div className="flex flex-col max-w-sm mx-auto items-center">
+    <Container>
       <AuthHeader isLoginHeader={true} />
       <LoginForum />
-    </div>
+    </Container>
   );
 }
 
