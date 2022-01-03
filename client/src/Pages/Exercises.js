@@ -3,6 +3,7 @@ import axios from "axios";
 import DeleteIcon from "../Assests/DeleteIcon";
 import CloseIcon from "../Assests/CloseIcon";
 import ButtonNav from "../Components/ButtonNav";
+import ExerciseCard from "../Components/ExerciseCard";
 
 function Exercise() {
   const [exercises, setExercises] = useState([]);
@@ -47,17 +48,10 @@ function Exercise() {
     }
 
     return exercises.map((exercise) => (
-      <div
-        key={exercise._id}
-        className="flex justify-between w-56 bg-slate-200 py-2 px-3 rounded mb-4"
-      >
-        <h3 className="truncate text-ellipsis overflow-hidden">
-          {exercise.name}
-        </h3>
-        <button onClick={() => handleDeleteExercise(exercise._id)}>
-          <DeleteIcon />
-        </button>
-      </div>
+      <ExerciseCard
+        exercise={exercise}
+        handleDeleteExercise={handleDeleteExercise}
+      />
     ));
   };
 
