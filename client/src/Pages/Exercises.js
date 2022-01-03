@@ -5,6 +5,7 @@
 
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import LinkIcon from "../Assests/LinkIcon";
 import DeleteIcon from "../Assests/DeleteIcon";
 import CloseIcon from "../Assests/CloseIcon";
@@ -93,6 +94,12 @@ function Exercise() {
   return (
     <>
       <div className="flex flex-col max-w-sm mx-auto items-center">
+        <div className="flex bg-slate-200 py-2 px-3 rounded mb-4">
+          <LinkIcon />
+          <Link to="/workout">
+            <button className="ml-1">Start a new workout</button>
+          </Link>
+        </div>
         <div className="flex bg-slate-200 py-2 px-3 rounded mb-12">
           <LinkIcon />
           <button
