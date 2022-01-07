@@ -11,6 +11,8 @@ import AddIcon from "../Assests/AddIcon";
 import { ExerciseContext } from "../Context/ExerciseContext";
 import Container from "../Components/Container";
 import WorkoutHeader from "../Components/WorkoutHeader";
+import { getCurrentDate } from "../Utils";
+import WorkoutExerciseCard from "../Components/WorkoutExerciseCard";
 
 function Workout() {
   const [workout, setWorkout] = useState({
@@ -36,14 +38,6 @@ function Workout() {
       setFetchedExercises(userExercises);
     });
   }, []);
-
-  function getCurrentDate() {
-    const now = new Date();
-    const offsetMs = now.getTimezoneOffset() * 60 * 1000;
-    const dateLocal = new Date(now.getTime() - offsetMs);
-    const str = dateLocal.toISOString().slice(0, 10).replace("T", " ");
-    return str;
-  }
 
   const handleUpdateWorkout = (e) => {
     setWorkout({
@@ -136,61 +130,6 @@ function Workout() {
       .catch((e) => console.log(e));
   };
 
-  const renderExercise = (exercise) => {
-    return (
-      <div className="bg-slate-200 px-4 py-4 rounded mx-3 w-72 max-w-xs my-5">
-        <div className="flex justify-between ">
-          <h2 className="text-lg">{exercise.name}</h2>
-          <button>
-            <DeleteIcon />
-          </button>
-        </div>
-        <table>
-          <thead>
-            <tr>
-              <th className="text-center">Set</th>
-              <th className="text-center pl-3">Weight</th>
-              <th className="text-center pl-3">Reps</th>
-            </tr>
-          </thead>
-          <tbody>
-            {exercise.reps.map((ex, idx) => {
-              return (
-                <tr className="b-5">
-                  <td>#{idx + 1}</td>
-                  <td className="pl-3">
-                    <input
-                      type="number"
-                      className="w-20 rounded-md text-center"
-                      value={exercise.weight[idx]}
-                      onChange={(e) => handleUpdateWeight(e, exercise, idx)}
-                    />
-                  </td>
-                  <td className="pl-3">
-                    <input
-                      type="number"
-                      className="w-20 rounded-md text-center"
-                      value={exercise.reps[idx]}
-                      onChange={(e) => handleUpdateReps(e, exercise, idx)}
-                    />
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        <div className="flex justify-center">
-          <button
-            className="text-center bg-blue-300 mt-3 rounded-full px-4 py-0.5"
-            onClick={() => handleAddSet(exercise)}
-          >
-            Add a set
-          </button>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <>
       <Container>
@@ -200,7 +139,14 @@ function Workout() {
           handleFinishWorkout={handleFinishWorkout}
         />
         {exercises.length !== 0 ? (
-          exercises.map((exercise) => renderExercise(exercise))
+          exercises.map((exercise) => (
+            <WorkoutExerciseCard
+              exercise={exercise}
+              handleAddSet={handleAddSet}
+              handleUpdateReps={handleUpdateReps}
+              handleUpdateWeight={handleUpdateWeight}
+            />
+          ))
         ) : (
           <p className="my-6 text-slate-500 text-sm">0 exercises added</p>
         )}
