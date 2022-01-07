@@ -3,21 +3,26 @@
 // - Add error handling
 
 const express = require("express");
+const { workoutValidation } = require("../validation");
 
 const Workout = require("../models/Workout");
-const Exercise = require("../models/Exercise");
 const User = require("../models/User");
 
 const router = express.Router();
 
 // Create a workout
 router.post("/", async (req, res) => {
-  const { userId, name, notes, exercises } = req.body;
+  // Input validation using Joi
+  const { error } = workoutValidation(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+
+  const { userId, name, notes, date, exercises } = req.body;
 
   const newWorkout = new Workout({
     userId,
     name,
     notes,
+    date,
     exercises,
   });
 
