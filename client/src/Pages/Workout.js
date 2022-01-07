@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -8,6 +8,9 @@ import XIcon from "../Assests/XIcon";
 import CloseIcon from "../Assests/CloseIcon";
 import UnCheckedCheckMark from "../Assests/UnCheckedCheckMark";
 import AddIcon from "../Assests/AddIcon";
+import { ExerciseContext } from "../Context/ExerciseContext";
+import Container from "../Components/Container";
+import WorkoutHeader from "../Components/WorkoutHeader";
 
 function Workout() {
   const [workout, setWorkout] = useState({
@@ -21,6 +24,8 @@ function Workout() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [fetchedExercies, setFetchedExercises] = useState([]);
   const navigate = useNavigate();
+
+  const { name } = useContext(ExerciseContext);
 
   useEffect(() => {
     axios.get("http://localhost:5000/exercises/").then((res) => {
@@ -40,27 +45,10 @@ function Workout() {
     return str;
   }
 
-  const handleUpdateWorkoutNotes = (e) => {
-    const workoutNotes = e.target.value;
+  const handleUpdateWorkout = (e) => {
     setWorkout({
       ...workout,
-      notes: workoutNotes,
-    });
-  };
-
-  const handleUpdateWorkoutName = (e) => {
-    const workoutName = e.target.value;
-    setWorkout({
-      ...workout,
-      name: workoutName,
-    });
-  };
-
-  const handleUpdateWorkoutDate = (e) => {
-    const workoutDate = e.target.value;
-    setWorkout({
-      ...workout,
-      date: workoutDate,
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -163,13 +151,12 @@ function Workout() {
               <th className="text-center">Set</th>
               <th className="text-center pl-3">Weight</th>
               <th className="text-center pl-3">Reps</th>
-              <th></th>
             </tr>
           </thead>
           <tbody>
             {exercise.reps.map((ex, idx) => {
               return (
-                <tr className="pb-5">
+                <tr className="b-5">
                   <td>#{idx + 1}</td>
                   <td className="pl-3">
                     <input
@@ -186,9 +173,6 @@ function Workout() {
                       value={exercise.reps[idx]}
                       onChange={(e) => handleUpdateReps(e, exercise, idx)}
                     />
-                  </td>
-                  <td className="pl-3">
-                    <UnCheckedCheckMark />
                   </td>
                 </tr>
               );
@@ -209,36 +193,12 @@ function Workout() {
 
   return (
     <>
-      <div className="flex flex-col max-w-sm mx-auto items-center">
-        <div className="px-3 max-w-sm">
-          <div className="flex justify-center">
-            <input
-              className="text-2xl font-semibold outline-none"
-              placeholder="Name (e.g. Leg Day)"
-              value={workout.name}
-              onChange={(e) => handleUpdateWorkoutName(e)}
-            />
-            <button
-              className="rounded-full bg-lime-500 px-4 py-1 text-white text-sm font-semibold"
-              onClick={handleFinishWorkout}
-            >
-              FINISH
-            </button>
-          </div>
-          <input
-            type="text-area"
-            className="font-extralight w-full outline-none"
-            placeholder="Notes (e.g. Focus on squat form)"
-            value={workout.notes}
-            onChange={(e) => handleUpdateWorkoutNotes(e)}
-          />
-          <input
-            type="date"
-            className="border border-gray-300 text-gray-900 rounded-lg block p-2.5 text-sm w-full"
-            value={workout.date}
-            onChange={handleUpdateWorkoutDate}
-          />
-        </div>
+      <Container>
+        <WorkoutHeader
+          workout={workout}
+          handleUpdateWorkout={handleUpdateWorkout}
+          handleFinishWorkout={handleFinishWorkout}
+        />
         {exercises.length !== 0 ? (
           exercises.map((exercise) => renderExercise(exercise))
         ) : (
@@ -250,7 +210,7 @@ function Workout() {
             className="text-white ml-2"
             onClick={() => setIsModalOpen((isModalOpen) => !isModalOpen)}
           >
-            Add an exercise
+            Add an exercise {name}
           </button>
         </div>
         <div className="flex bg-blue-600 py-2 px-3 rounded mb-4">
@@ -259,7 +219,7 @@ function Workout() {
             Cancel workout
           </button>
         </div>
-      </div>
+      </Container>
       {isModalOpen && (
         <div className="bg-black bg-opacity-50 absolute inset-0 flex justify-center items-center">
           <div className="bg-gray-200 max-w-sm flex flex-col mx-auto items-center px-6 py-6 relative rounded">
