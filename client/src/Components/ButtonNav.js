@@ -1,13 +1,23 @@
 import { useNavigate } from "react-router";
-import LinkIcon from "../Assests/LinkIcon";
 
-function ButtonNav({ navigateTo, buttonText, onClick }) {
+function ButtonNav({
+  navigateTo,
+  buttonText,
+  onClick,
+  color,
+  children,
+  textColor,
+}) {
   const navigate = useNavigate();
   return (
-    <div className="flex bg-slate-200 py-2 px-3 rounded mb-4">
-      <LinkIcon />
+    <div
+      className={`flex bg-${
+        color ? color : "slate-200"
+      } py-2 px-3 rounded mb-4`}
+    >
+      {children}
       <button
-        className="ml-1"
+        className={`${textColor && textColor} ml-1`}
         onClick={navigateTo ? () => navigate(navigateTo) : onClick}
       >
         {buttonText}
