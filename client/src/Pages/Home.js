@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import WorkoutCard from "../Components/WorkoutCard";
 import ButtonNav from "../Components/ButtonNav";
+import LinkIcon from "../Assests/LinkIcon";
 
 function Home() {
   const [exercises, setExercises] = useState([]);
@@ -47,12 +48,17 @@ function Home() {
 
   return (
     <div className="flex flex-col max-w-sm items-center mx-auto">
-      <ButtonNav navigateTo="/workout" buttonText="Start a new workout" />
-      <ButtonNav navigateTo="/exercises" buttonText="View your exercises" />
+      <ButtonNav navigateTo="/workout" buttonText="Start a new workout">
+        <LinkIcon />
+      </ButtonNav>
+      <ButtonNav navigateTo="/exercises" buttonText="View your exercises">
+        <LinkIcon />
+      </ButtonNav>
       <h1 className="text-2xl font-bold my-4">Completed workouts</h1>
       {workouts.length > 0 ? (
         workouts.map((workout) => (
           <WorkoutCard
+            key={workout._id}
             workout={workout}
             handleDeleteWorkout={handleDeleteWorkout}
             exercises={exercises}
