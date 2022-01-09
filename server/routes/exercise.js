@@ -2,12 +2,16 @@ const express = require("express");
 
 const User = require("../models/User");
 const Exercise = require("../models/Exercise");
-const { findByIdAndUpdate } = require("../models/User");
+const { exerciseValidation } = require("../validation");
 
 const router = express.Router();
 
 // Create a new exercise
 router.post("/", async (req, res) => {
+  // Input validation using Joi
+  const { error } = exerciseValidation(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+
   const { userId, name, description, category } = req.body;
 
   const newExercise = new Exercise({

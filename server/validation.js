@@ -21,5 +21,17 @@ const workoutValidation = (workoutObject) => {
   return schema.validate(workoutObject);
 };
 
+const exerciseValidation = (exerciseObject) => {
+  const schema = Joi.object({
+    userId: Joi.string().required(),
+    name: Joi.string().required(),
+    description: Joi.string().required(),
+    category: Joi.string().required(),
+  });
+
+  return schema.validate(exerciseObject);
+};
+
 module.exports.authValidation = authValidation;
 module.exports.workoutValidation = workoutValidation;
+module.exports.exerciseValidation = exerciseValidation;
