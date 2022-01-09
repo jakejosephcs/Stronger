@@ -80,6 +80,18 @@ function Workout() {
 
   const handleAddExerciseToWorkout = (exercise) => {
     setError("");
+
+    let isExerciseAlreadyAddded = false;
+    exercises.forEach((ex) => {
+      if (ex._id === exercise._id) {
+        isExerciseAlreadyAddded = true;
+      }
+    });
+
+    if (isExerciseAlreadyAddded) {
+      return;
+    }
+
     setExercises([
       ...exercises,
       {
