@@ -1,19 +1,38 @@
-import CalenderIcon from "../Assests/CalenderIcon";
+import CalenderIcon2 from "../Assests/CalenderIcon2";
 import TrashIcon from "../Assests/TrashIcon";
 
-function WorkoutCard({ workout, handleDeleteWorkout, exercises }) {
+function WorkoutCard({
+  workout,
+  handleDeleteWorkout,
+  exercises,
+  isDeletingExercise,
+}) {
   const renderExercises = (exercise) => {
     const exerciseName = exercises.find(
       (ex) => ex._id === exercise.exerciseId
     )?.name;
 
+    const calculateOneRepMax = () => {
+      let oneRepMax = 0;
+      for (let i = 0; i < exercise.weight.length; i++) {
+        let newOneRepMax =
+          exercise.weight[i] / (1.0278 - 0.0278 * exercise.reps[i]);
+        if (newOneRepMax > oneRepMax) {
+          oneRepMax = newOneRepMax;
+        }
+      }
+      return parseInt(oneRepMax);
+    };
+
     return (
       <tr>
         <td className="text-center">{exercise.reps.length}</td>
-        <td className="pl-1 max-w-[8rem] whitespace-nowrap overflow-hidden text-ellipses truncate">
-          {exerciseName}
+        <td>
+          <p className="w-44 overflow-hidden text-ellipses truncate text-center">
+            {exerciseName}
+          </p>
         </td>
-        <td className="text-center">{Math.max(...exercise.weight)}</td>
+        <td className="text-center">{calculateOneRepMax()}</td>
       </tr>
     );
   };
@@ -23,19 +42,19 @@ function WorkoutCard({ workout, handleDeleteWorkout, exercises }) {
       <div className="flex justify-between">
         <h3 className="font-semibold">{workout.name}</h3>
         <button onClick={() => handleDeleteWorkout(workout)}>
-          <TrashIcon />
+          {isDeletingExercise ? "..." : <TrashIcon />}
         </button>
       </div>
-      <div className="flex">
-        <CalenderIcon />
-        <span>{workout.date}</span>
+      <div className="flex ">
+        <CalenderIcon2 />
+        <span className="ml-1 text-sm">{workout.date}</span>
       </div>
       <table>
         <thead>
           <tr>
             <th className="font-medium">Sets</th>
-            <th className="font-medium text-left pl-1">Exercises</th>
-            <th className="font-medium">Best weight</th>
+            <th className="font-medium text-center pl-1 w-44">Exercises</th>
+            <th className="font-medium">1RM</th>
           </tr>
         </thead>
         <tbody>
