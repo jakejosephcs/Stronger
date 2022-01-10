@@ -11,8 +11,8 @@ function ButtonNav({
   const navigate = useNavigate();
   return (
     <div
-      className={`flex bg-${
-        color ? color : "slate-200"
+      className={`flex ${
+        color ? color : "bg-slate-200"
       } py-2 px-3 rounded mb-4`}
     >
       {children}
