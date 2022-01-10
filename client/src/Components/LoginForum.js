@@ -35,8 +35,8 @@ function LoginForum() {
       })
       .then((res) => {
         localStorage.setItem("token", res.data.token);
-        navigate("/");
         setIsLoading(false);
+        navigate("/");
       })
       .catch((err) => {
         setError(err.response.data);
