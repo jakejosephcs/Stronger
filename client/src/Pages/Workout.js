@@ -1,35 +1,32 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { getCurrentDate } from "../Utils";
 import axios from "axios";
+import Container from "../Components/Container";
+import WorkoutHeader from "../Components/WorkoutHeader";
+import WorkoutExerciseCard from "../Components/WorkoutExerciseCard";
+import ButtonNav from "../Components/ButtonNav";
+import UICard from "../Components/UICard";
 import PlusIcon from "../Assests/PlusIcon";
 import XIcon from "../Assests/XIcon";
 import CloseIcon from "../Assests/CloseIcon";
 import AddIcon from "../Assests/AddIcon";
-import Container from "../Components/Container";
-import WorkoutHeader from "../Components/WorkoutHeader";
-import { getCurrentDate } from "../Utils";
-import WorkoutExerciseCard from "../Components/WorkoutExerciseCard";
-import ButtonNav from "../Components/ButtonNav";
-import UICard from "../Components/UICard";
 
 function Workout() {
+  const [token, setToken] = useState(localStorage.getItem("token"));
+
   const [workout, setWorkout] = useState({
-    userId: "61ca404e5a56d8505f193391",
     name: "",
     notes: "",
     date: getCurrentDate(),
     exercises: [],
   });
-
+  const [exercises, setExercises] = useState([]);
   const [isWorkoutSubmitting, setIsWorkoutSubmitting] = useState(false);
-
   const [error, setError] = useState("");
 
-  const [exercises, setExercises] = useState([]);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const [fetchedExercies, setFetchedExercises] = useState([]);
   const [fetchedExerciesError, setFetchedExercisesError] = useState("");
   const [isfetchedExerciesLoading, setIsfetchedExerciesLoading] =
@@ -40,18 +37,25 @@ function Workout() {
   useEffect(() => {
     setIsfetchedExerciesLoading(true);
     axios
-      .get("http://localhost:5000/exercises/")
+      .get("http://localhost:5000/exercises/", {
+        headers: {
+          "x-auth-token": token,
+        },
+      })
       .then((res) => {
-        const allExercises = res.data;
-        const userExercises = allExercises.filter(
-          (exercise) => exercise.userId === workout.userId
-        );
-        setFetchedExercises(userExercises);
+        setFetchedExercises(res.data);
         setIsfetchedExerciesLoading(false);
       })
-      .catch((err) => {
-        setIsfetchedExerciesLoading(false);
-        setFetchedExercisesError("Uh Oh! Something went wrong");
+      .catch((error) => {
+        if (
+          error.response &&
+          (error.response.status === 401 || error.response.status === 403)
+        ) {
+          navigate("/login");
+        } else {
+          setIsfetchedExerciesLoading(false);
+          setFetchedExercisesError("Uh Oh! Something went wrong");
+        }
       });
   }, []);
 
@@ -64,6 +68,7 @@ function Workout() {
   };
 
   const handleAddSet = (exercise) => {
+    setError("");
     setExercises(
       exercises.map((ex) => {
         if (ex._id === exercise._id) {
@@ -155,15 +160,25 @@ function Workout() {
     setWorkout(workoutWithFormattedExercises);
 
     axios
-      .post("http://localhost:5000/workouts/", workoutWithFormattedExercises)
+      .post("http://localhost:5000/workouts/", workoutWithFormattedExercises, {
+        headers: {
+          "x-auth-token": token,
+        },
+      })
       .then((res) => {
-        console.log(res);
         setIsWorkoutSubmitting(false);
         navigate("/home");
       })
       .catch((err) => {
-        setIsWorkoutSubmitting(false);
-        setError(err.response.data);
+        if (
+          error.response &&
+          (error.response.status === 401 || error.response.status === 403)
+        ) {
+          navigate("/login");
+        } else {
+          setIsWorkoutSubmitting(false);
+          setError(err.response.data);
+        }
       });
   };
 
@@ -182,6 +197,7 @@ function Workout() {
 
     return exercises.map((exercise) => (
       <WorkoutExerciseCard
+        key={exercise._id}
         exercise={exercise}
         handleAddSet={handleAddSet}
         handleUpdateReps={handleUpdateReps}
@@ -238,7 +254,7 @@ function Workout() {
           <ButtonNav
             onClick={toggleModal}
             buttonText="Add an exercise"
-            color="blue-600"
+            color="bg-blue-600"
             textColor="text-white"
           >
             <PlusIcon />
@@ -246,7 +262,7 @@ function Workout() {
           <ButtonNav
             navigateTo="/home"
             buttonText="Cancel workout"
-            color="red-600"
+            color="bg-red-600"
             textColor="text-white"
           >
             <XIcon />

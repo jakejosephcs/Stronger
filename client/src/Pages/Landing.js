@@ -24,9 +24,9 @@ function Landing() {
   const buttonsToRender = (userToken) => {
     if (userToken === "null") {
       return (
-        <section className="mb-10">
+        <section className="flex flex-col mb-10">
           <ButtonPrimary
-            text="Registration"
+            text="Register"
             onClick={() => navigate("/registration")}
           />
           <ButtonPrimary text="Login" onClick={() => navigate("/login")} />
@@ -34,9 +34,13 @@ function Landing() {
       );
     }
     return (
-      <section className="mb-10">
+      <section className="flex flex-col mb-10">
         <ButtonPrimary text="Workout" onClick={() => navigate("/home")} />
-        <ButtonPrimary text="Logout" onClick={clearLocalStorage} />
+        <ButtonPrimary
+          text="Logout"
+          color="bg-red-600"
+          onClick={clearLocalStorage}
+        />
       </section>
     );
   };

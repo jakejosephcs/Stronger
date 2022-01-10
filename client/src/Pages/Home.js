@@ -1,68 +1,80 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 import axios from "axios";
+import Container from "../Components/Container";
 import WorkoutCard from "../Components/WorkoutCard";
+import UICard from "../Components/UICard";
 import ButtonNav from "../Components/ButtonNav";
 import LinkIcon from "../Assests/LinkIcon";
-import Container from "../Components/Container";
-import UICard from "../Components/UICard";
 
 function Home() {
-  const [exercises, setExercises] = useState([]);
-  const [workouts, setWorkouts] = useState([]);
-  const [userId, setUserId] = useState("61ca404e5a56d8505f193391");
+  const [token, setToken] = useState(localStorage.getItem("token"));
 
+  const [workouts, setWorkouts] = useState([]);
   const [isLoadingWorkouts, setIsLoadingWorkouts] = useState(false);
+
+  const [exercises, setExercises] = useState([]);
   const [isDeletingExercise, setIsDeletingExercise] = useState(false);
+
   const [error, setError] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     setIsLoadingWorkouts(true);
     axios
-      .get("http://localhost:5000/workouts/")
+      .get("http://localhost:5000/workouts/", {
+        headers: {
+          "x-auth-token": token,
+        },
+      })
       .then((res) => {
-        const allWorkouts = res.data;
-        const userWorkouts = allWorkouts.filter(
-          (workout) => workout.userId === userId
-        );
-        setWorkouts(userWorkouts);
+        setWorkouts(res.data);
         setIsLoadingWorkouts(false);
       })
       .catch((error) => {
-        setIsLoadingWorkouts(false);
-        setError(true);
+        if (
+          error.response &&
+          (error.response.status === 401 || error.response.status === 403)
+        ) {
+          navigate("/login");
+        } else {
+          setIsLoadingWorkouts(false);
+          setError(true);
+        }
       });
   }, []);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/exercises/").then((res) => {
-      const allExercises = res.data;
-      const userExercises = allExercises.filter(
-        (exercise) => exercise.userId === userId
-      );
-      setExercises(userExercises);
-    });
+    axios
+      .get("http://localhost:5000/exercises/", {
+        headers: {
+          "x-auth-token": token,
+        },
+      })
+      .then((res) => {
+        setExercises(res.data);
+      });
   }, []);
 
   const handleDeleteWorkout = (workout) => {
     setIsDeletingExercise(true);
     axios
       .delete(`http://localhost:5000/workouts/${workout._id}`, {
-        data: {
-          userId,
+        headers: {
+          "x-auth-token": token,
         },
       })
       .then((res) => {
-        console.log(res);
         setWorkouts(workouts.filter((w) => w._id !== workout._id));
         setIsDeletingExercise(false);
       })
       .catch((e) => {
-        console.log(e.response);
         setIsDeletingExercise(false);
       });
   };
 
-  const componentToRender = (workouts, isLoadingWorkouts, error) => {
+  const componentToRender = () => {
     if (isLoadingWorkouts) {
       return <UICard text="Loading..." />;
     }
@@ -71,19 +83,19 @@ function Home() {
       return <UICard text="Uh Oh! Something went wrong" />;
     }
 
-    if (workouts.length > 0) {
-      return workouts.map((workout) => (
-        <WorkoutCard
-          key={workout._id}
-          workout={workout}
-          handleDeleteWorkout={handleDeleteWorkout}
-          exercises={exercises}
-          isDeletingExercise={isDeletingExercise}
-        />
-      ));
-    } else {
+    if (workouts.length === 0) {
       return <UICard text="0 workouts complete" />;
     }
+
+    return workouts.map((workout) => (
+      <WorkoutCard
+        key={workout._id}
+        workout={workout}
+        handleDeleteWorkout={handleDeleteWorkout}
+        exercises={exercises}
+        isDeletingExercise={isDeletingExercise}
+      />
+    ));
   };
 
   return (
@@ -95,7 +107,7 @@ function Home() {
         <LinkIcon />
       </ButtonNav>
       <h1 className="text-2xl font-bold my-4">Completed workouts</h1>
-      {componentToRender(workouts, isLoadingWorkouts, error)}
+      {componentToRender()}
     </Container>
   );
 }

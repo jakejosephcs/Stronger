@@ -1,49 +1,64 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 import axios from "axios";
-import CloseIcon from "../Assests/CloseIcon";
-import ButtonNav from "../Components/ButtonNav";
+
 import ExerciseCard from "../Components/ExerciseCard";
-import Container from "../Components/Container";
-import LinkIcon from "../Assests/LinkIcon";
 import UICard from "../Components/UICard";
 import ButtonPrimary from "../Components/ButtonPrimary";
+import ButtonNav from "../Components/ButtonNav";
+import Container from "../Components/Container";
+import CloseIcon from "../Assests/CloseIcon";
+import LinkIcon from "../Assests/LinkIcon";
 
 function Exercise() {
-  const [exercises, setExercises] = useState([]);
-  const [userId, setUserId] = useState("61ca404e5a56d8505f193391");
-  const [newExerciseName, setNewExerciseName] = useState("");
+  const [token, setToken] = useState(localStorage.getItem("token"));
 
+  // States associated with exercises
+  const [exercises, setExercises] = useState([]);
   const [isExercisesLoading, setIsExercisesLoading] = useState(false);
   const [exercisesError, setExercisesError] = useState(false);
 
+  // States associated with the modal
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [newExerciseName, setNewExerciseName] = useState("");
   const [isCreateExerciseLoading, setIsCreateExerciseLoading] = useState(false);
   const [createExerciseError, setCreateExerciseError] = useState("");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     setIsExercisesLoading(true);
     axios
-      .get("http://localhost:5000/exercises/")
+      .get("http://localhost:5000/exercises/", {
+        headers: {
+          "x-auth-token": token,
+        },
+      })
       .then((res) => {
-        const allExercises = res.data;
-        const userExercises = allExercises.filter(
-          (exercise) => exercise.userId === userId
-        );
-        setExercises(userExercises);
+        setExercises(res.data);
         setIsExercisesLoading(false);
+        setExercisesError(false);
       })
       .catch((error) => {
-        setIsExercisesLoading(false);
-        setExercisesError(true);
+        // Redirect the user to /login if they do not have access
+        if (
+          error.response &&
+          (error.response.status === 401 || error.response.status === 403)
+        ) {
+          navigate("/login");
+        } else {
+          setIsExercisesLoading(false);
+          setExercisesError(true);
+        }
       });
   }, []);
 
   const handleDeleteExercise = (exerciseId) => {
+    setIsExercisesLoading(true);
     axios
       .delete(`http://localhost:5000/exercises/${exerciseId}`, {
-        data: {
-          userId: userId,
+        headers: {
+          "x-auth-token": token,
         },
       })
       .then((res) => {
@@ -51,8 +66,39 @@ function Exercise() {
           (exercise) => exercise._id !== exerciseId
         );
         setExercises(filteredExercises);
+        setIsExercisesLoading(false);
       })
-      .catch((e) => console.log(e));
+      .catch((e) => setIsExercisesLoading(false));
+  };
+
+  const handleCreateNewExercise = () => {
+    setIsCreateExerciseLoading(true);
+    const newExercise = {
+      name: newExerciseName.toLowerCase(),
+    };
+
+    axios
+      .post("http://localhost:5000/exercises/", newExercise, {
+        headers: {
+          "x-auth-token": token,
+        },
+      })
+      .then((res) => {
+        setExercises((exercises) => exercises.concat(newExercise));
+        setIsModalOpen(false);
+        setIsCreateExerciseLoading(false);
+        setNewExerciseName("");
+      })
+      .catch((err) => {
+        setCreateExerciseError(err.response.data);
+        setIsCreateExerciseLoading(false);
+        setNewExerciseName("");
+      });
+  };
+
+  const toggleModal = () => {
+    setIsModalOpen((isModalOpen) => !isModalOpen);
+    setCreateExerciseError("");
   };
 
   const displayExercises = () => {
@@ -70,38 +116,11 @@ function Exercise() {
 
     return exercises.map((exercise) => (
       <ExerciseCard
+        key={exercise._id}
         exercise={exercise}
         handleDeleteExercise={handleDeleteExercise}
       />
     ));
-  };
-
-  const handleCreateNewExercise = () => {
-    setIsCreateExerciseLoading(true);
-    const newExercise = {
-      userId: userId,
-      name: newExerciseName.toLowerCase(),
-      description: "test",
-      category: "test",
-    };
-
-    axios
-      .post("http://localhost:5000/exercises/", newExercise)
-      .then((res) => {
-        setExercises((exercises) => exercises.concat(newExercise));
-        setIsModalOpen(false);
-        setIsCreateExerciseLoading(false);
-        setNewExerciseName("");
-      })
-      .catch((err) => {
-        setCreateExerciseError(err.response.data);
-        setIsCreateExerciseLoading(false);
-        setNewExerciseName("");
-      });
-  };
-
-  const toggleModal = () => {
-    setIsModalOpen((isModalOpen) => !isModalOpen);
   };
 
   return (
