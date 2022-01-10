@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+require("dotenv").config();
 const cors = require("cors");
 
 const authRoute = require("./routes/auth");
@@ -8,7 +9,6 @@ const exerciseRoute = require("./routes/exercise");
 const workoutRoute = require("./routes/workout");
 
 const app = express();
-
 app.use(express.json());
 
 mongoose.connect(process.env.MONGODB_CONNECTION, () => {
@@ -21,6 +21,6 @@ app.use("/users", userRoute);
 app.use("/exercises", exerciseRoute);
 app.use("/workouts", workoutRoute);
 
-app.listen(5000, () => {
-  console.log("Server listening on PORT 5000");
+app.listen(process.env.PORT || 5000, () => {
+  console.log("Server is running");
 });
