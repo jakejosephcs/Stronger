@@ -1,24 +1,24 @@
 const express = require("express");
-
+const authentication = require("../middleware/authentication");
+const { exerciseValidation } = require("../middleware/validation");
 const User = require("../models/User");
 const Exercise = require("../models/Exercise");
-const { exerciseValidation } = require("../validation");
 
 const router = express.Router();
 
 // Create a new exercise
-router.post("/", async (req, res) => {
-  // Input validation using Joi
+router.post("/", authentication, async (req, res) => {
+  // Input validation using Joi (exercise name is required)
   const { error } = exerciseValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  const { userId, name, description, category } = req.body;
+  const { name } = req.body;
+  // userId obtained from the authentication middleware
+  const { user: userId } = req;
 
   const newExercise = new Exercise({
     userId,
     name,
-    description,
-    category,
   });
 
   try {
@@ -41,9 +41,11 @@ router.post("/", async (req, res) => {
 });
 
 // Get all exercises
-router.get("/", async (req, res) => {
+router.get("/", authentication, async (req, res) => {
+  const { user: userId } = req;
+
   try {
-    const exercises = await Exercise.find();
+    const exercises = await Exercise.find({ userId });
     if (!exercises) res.status(404).json({ error: "There are no exercises" });
     res.json(exercises);
   } catch (error) {
@@ -65,9 +67,9 @@ router.get("/:id", async (req, res) => {
 });
 
 // Delete an exercise
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authentication, async (req, res) => {
   const exerciseId = req.params.id;
-  const { userId } = req.body;
+  const { user: userId } = req;
 
   try {
     const exercise = await Exercise.findById(exerciseId);
@@ -83,34 +85,6 @@ router.delete("/:id", async (req, res) => {
     await Exercise.deleteOne({ _id: exerciseId });
 
     res.json("deleted");
-  } catch (error) {
-    res.status(500).json(error);
-  }
-});
-
-// Update an exercise
-router.put("/:id", async (req, res) => {
-  const exerciseId = req.params.id;
-  const { userId, name, description, category } = req.body;
-
-  try {
-    const exercise = await Exercise.findById(exerciseId);
-    const user = await User.findById(userId);
-
-    if (!exercise.userId.equals(user._id)) {
-      return res.status(401).json({ error: "Not authorized" });
-    }
-
-    await Exercise.findByIdAndUpdate(
-      exerciseId,
-      {
-        name,
-        description,
-        category,
-      },
-      { new: true }
-    );
-    res.json("updated");
   } catch (error) {
     res.status(500).json(error);
   }

@@ -3,7 +3,8 @@
 // - Add error handling
 
 const express = require("express");
-const { workoutValidation } = require("../validation");
+const { workoutValidation } = require("../middleware/validation");
+const authentication = require("../middleware/authentication");
 
 const Workout = require("../models/Workout");
 const User = require("../models/User");
@@ -11,12 +12,13 @@ const User = require("../models/User");
 const router = express.Router();
 
 // Create a workout
-router.post("/", async (req, res) => {
+router.post("/", authentication, async (req, res) => {
   // Input validation using Joi
   const { error } = workoutValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  const { userId, name, notes, date, exercises } = req.body;
+  const { name, notes, date, exercises } = req.body;
+  const { user: userId } = req;
 
   const newWorkout = new Workout({
     userId,
@@ -45,9 +47,11 @@ router.post("/", async (req, res) => {
 });
 
 // Get all workouts
-router.get("/", async (req, res) => {
+router.get("/", authentication, async (req, res) => {
+  const { user: userId } = req;
+
   try {
-    const allWorkouts = await Workout.find();
+    const allWorkouts = await Workout.find({ userId });
     res.json(allWorkouts);
   } catch (error) {
     res.status(500).json(error);
@@ -69,9 +73,9 @@ router.get("/:id", async (req, res) => {
 });
 
 // Delete a workout
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authentication, async (req, res) => {
   const workoutId = req.params.id;
-  const { userId } = req.body;
+  const { user: userId } = req;
 
   try {
     // Get the workout
@@ -94,17 +98,6 @@ router.delete("/:id", async (req, res) => {
     }
     user.workouts.pull(workoutId);
     await user.save();
-
-    // Remove all workouts from each exercise's workout array
-    // -- Do i need this? Haven't workouts to the exercise's workout array
-    // workout.exercises.map(async (exercise) => {
-    //   const foundExercise = await Exercise.findById(exercise.exerciseId);
-    //   if (!foundExercise) {
-    //     return res.status(400).send("Exercise already deleted");
-    //   }
-    //   foundExercise.workouts.pull(workoutId);
-    //   await foundExercise.save();
-    // });
 
     // Delete the workout
     await Workout.deleteOne({ _id: workoutId });

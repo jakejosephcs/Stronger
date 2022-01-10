@@ -8,7 +8,7 @@ require("dotenv").config();
 
 // Importing required files
 const User = require("../models/User");
-const { authValidation } = require("../validation");
+const { authValidation } = require("../middleware/validation");
 
 // Creating a router using express
 const router = express.Router();
