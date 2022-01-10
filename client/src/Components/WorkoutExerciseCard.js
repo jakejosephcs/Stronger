@@ -6,16 +6,17 @@ function WorkoutExerciseCard({
   handleUpdateWeight,
   handleUpdateReps,
   handleAddSet,
+  handleRemoveExerciseFromWorkout,
 }) {
   return (
-    <div className="bg-slate-200 px-4 py-4 rounded mx-3 w-72 max-w-xs my-5">
+    <div className="bg-slate-200 px-4 py-4 rounded mx-3 w-72 max-w-xs mt-5">
       <div className="flex justify-between ">
         <h2 className="text-lg">{exercise.name}</h2>
-        <button>
+        <button onClick={() => handleRemoveExerciseFromWorkout(exercise)}>
           <DeleteIcon />
         </button>
       </div>
-      <table>
+      <table className="mx-auto">
         <thead>
           <tr>
             <th className="text-center">Set</th>
@@ -31,17 +32,21 @@ function WorkoutExerciseCard({
                 <td className="pl-3">
                   <input
                     type="number"
-                    className="w-20 rounded-md text-center"
+                    className="w-20 rounded-md text-center mb-1"
                     value={exercise.weight[idx]}
                     onChange={(e) => handleUpdateWeight(e, exercise, idx)}
+                    min="0"
+                    required
                   />
                 </td>
                 <td className="pl-3">
                   <input
                     type="number"
-                    className="w-20 rounded-md text-center"
+                    className="w-20 rounded-md text-center mb-1"
                     value={exercise.reps[idx]}
                     onChange={(e) => handleUpdateReps(e, exercise, idx)}
+                    min="0"
+                    required
                   />
                 </td>
               </tr>
