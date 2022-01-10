@@ -10,14 +10,6 @@ const ExerciseSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  description: {
-    type: String,
-    required: true,
-  },
-  category: {
-    type: String,
-    required: true,
-  },
   workouts: [
     {
       type: mongoose.Schema.Types.ObjectId,
