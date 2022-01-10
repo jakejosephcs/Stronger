@@ -1,6 +1,11 @@
 import React from "react";
 
-function WorkoutHeader({ workout, handleUpdateWorkout, handleFinishWorkout }) {
+function WorkoutHeader({
+  workout,
+  handleUpdateWorkout,
+  handleFinishWorkout,
+  isWorkoutSubmitting,
+}) {
   return (
     <div className="px-3 max-w-sm">
       <div className="flex justify-center">
@@ -15,7 +20,7 @@ function WorkoutHeader({ workout, handleUpdateWorkout, handleFinishWorkout }) {
           className="rounded-full bg-lime-500 px-4 py-1 text-white text-sm font-semibold"
           onClick={handleFinishWorkout}
         >
-          FINISH
+          {isWorkoutSubmitting ? "..." : "FINISH"}
         </button>
       </div>
       <input
