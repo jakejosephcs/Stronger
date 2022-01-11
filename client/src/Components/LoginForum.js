@@ -29,7 +29,7 @@ function LoginForum() {
     setIsLoading(true);
     e.preventDefault();
     axios
-      .post("http://localhost:5000/auth/login", {
+      .post("https://stronger-server.herokuapp.com/auth/login", {
         email: user.email,
         password: user.password,
       })

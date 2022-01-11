@@ -29,7 +29,7 @@ function Exercise() {
   useEffect(() => {
     setIsExercisesLoading(true);
     axios
-      .get("http://localhost:5000/exercises/", {
+      .get("https://stronger-server.herokuapp.com/exercises/", {
         headers: {
           "x-auth-token": token,
         },
@@ -56,7 +56,7 @@ function Exercise() {
   const handleDeleteExercise = (exerciseId) => {
     setIsExercisesLoading(true);
     axios
-      .delete(`http://localhost:5000/exercises/${exerciseId}`, {
+      .delete(`https://stronger-server.herokuapp.com/exercises/${exerciseId}`, {
         headers: {
           "x-auth-token": token,
         },
@@ -78,7 +78,7 @@ function Exercise() {
     };
 
     axios
-      .post("http://localhost:5000/exercises/", newExercise, {
+      .post("https://stronger-server.herokuapp.com/exercises/", newExercise, {
         headers: {
           "x-auth-token": token,
         },
