@@ -21,7 +21,7 @@ function Landing() {
     navigate("/login");
   };
 
-  const buttonsToRender = (userToken) => {
+  const RenderButtons = ({ userToken }) => {
     if (userToken === null) {
       return (
         <section className="flex flex-col mb-10">
@@ -54,7 +54,7 @@ function Landing() {
         <div className="text-3xl">Be Consistent</div>
         <div className="text-3xl">See Results</div>
       </section>
-      {buttonsToRender(token)}
+      <RenderButtons userToken={token} />
       <section>
         <FeatureCard
           iconName="NoteIcon"
