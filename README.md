@@ -1,5 +1,5 @@
 
-# Stronger - [__try it out__](strongerapp.netlify.app)
+# Stronger - [__try it out__](https://strongerapp.netlify.app/)
 
 Full stack web application that allows anyone to track their weightlifting workouts in the gym.
 
