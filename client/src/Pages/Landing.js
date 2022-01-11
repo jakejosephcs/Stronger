@@ -10,19 +10,19 @@ function Landing() {
 
   useEffect(() => {
     const localStorageToken = localStorage.getItem("token");
-    if (localStorageToken !== null) {
+    if (localStorageToken !== "") {
       setToken(localStorageToken);
     }
   }, []);
 
   const clearLocalStorage = () => {
-    localStorage.setItem("token", null);
-    setToken(null);
+    localStorage.setItem("token", "");
+    setToken("");
     navigate("/login");
   };
 
   const RenderButtons = ({ userToken }) => {
-    if (userToken === null) {
+    if (userToken === "") {
       return (
         <section className="flex flex-col mb-10">
           <ButtonPrimary
