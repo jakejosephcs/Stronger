@@ -22,7 +22,7 @@ function Landing() {
   };
 
   const RenderButtons = ({ userToken }) => {
-    if (userToken) {
+    if (!userToken) {
       return (
         <section className="flex flex-col mb-10">
           <ButtonPrimary
