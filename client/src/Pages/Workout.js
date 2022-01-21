@@ -37,7 +37,7 @@ function Workout() {
   useEffect(() => {
     setIsfetchedExerciesLoading(true);
     axios
-      .get(`${process.env.REACT_APP_BACKEND_URL}/exercises/`, {
+      .get(`${process.env.REACT_APP_LOCAL_URL}/exercises/`, {
         headers: {
           "x-auth-token": token,
         },
@@ -161,7 +161,7 @@ function Workout() {
 
     axios
       .post(
-        `${process.env.REACT_APP_BACKEND_URL}/workouts/`,
+        `${process.env.REACT_APP_LOCAL_URL}/workouts/`,
         workoutWithFormattedExercises,
         {
           headers: {

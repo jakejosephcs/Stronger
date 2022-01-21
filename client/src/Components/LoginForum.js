@@ -29,7 +29,7 @@ function LoginForum() {
     setIsLoading(true);
     e.preventDefault();
     axios
-      .post(`${process.env.REACT_APP_BACKEND_URL}/auth/login`, {
+      .post(`${process.env.REACT_APP_LOCAL_URL}/auth/login`, {
         email: user.email,
         password: user.password,
       })

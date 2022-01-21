@@ -28,7 +28,7 @@ export default function RegistrationForum() {
 
     e.preventDefault();
     axios
-      .post(`${process.env.REACT_APP_BACKEND_URL}/auth/signup`, {
+      .post(`${process.env.REACT_APP_LOCAL_URL}/auth/signup`, {
         email: user.email,
         password: user.password,
       })

@@ -23,7 +23,7 @@ function Home() {
   useEffect(() => {
     setIsLoadingWorkouts(true);
     axios
-      .get(`${process.env.REACT_APP_BACKEND_URL}/workouts/`, {
+      .get(`${process.env.REACT_APP_LOCAL_URL}/workouts/`, {
         headers: {
           "x-auth-token": token,
         },
@@ -47,7 +47,7 @@ function Home() {
 
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_BACKEND_URL}/exercises/`, {
+      .get(`${process.env.REACT_APP_LOCAL_URL}/exercises/`, {
         headers: {
           "x-auth-token": token,
         },
@@ -60,7 +60,7 @@ function Home() {
   const handleDeleteWorkout = (workout) => {
     setIsDeletingExercise(true);
     axios
-      .delete(`${process.env.REACT_APP_BACKEND_URL}/workouts/${workout._id}`, {
+      .delete(`${process.env.REACT_APP_LOCAL_URL}/workouts/${workout._id}`, {
         headers: {
           "x-auth-token": token,
         },
