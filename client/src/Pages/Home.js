@@ -23,7 +23,7 @@ function Home() {
   useEffect(() => {
     setIsLoadingWorkouts(true);
     axios
-      .get("https://stronger-server.herokuapp.com/workouts/", {
+      .get(`${process.env.REACT_APP_BACKEND_URL}/workouts/`, {
         headers: {
           "x-auth-token": token,
         },
@@ -47,7 +47,7 @@ function Home() {
 
   useEffect(() => {
     axios
-      .get("https://stronger-server.herokuapp.com/exercises/", {
+      .get(`${process.env.REACT_APP_BACKEND_URL}/exercises/`, {
         headers: {
           "x-auth-token": token,
         },
@@ -60,7 +60,7 @@ function Home() {
   const handleDeleteWorkout = (workout) => {
     setIsDeletingExercise(true);
     axios
-      .delete(`https://stronger-server.herokuapp.com/workouts/${workout._id}`, {
+      .delete(`${process.env.REACT_APP_BACKEND_URL}/workouts/${workout._id}`, {
         headers: {
           "x-auth-token": token,
         },

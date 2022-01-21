@@ -37,7 +37,7 @@ function Workout() {
   useEffect(() => {
     setIsfetchedExerciesLoading(true);
     axios
-      .get("https://stronger-server.herokuapp.com/exercises/", {
+      .get(`${process.env.REACT_APP_BACKEND_URL}/exercises/`, {
         headers: {
           "x-auth-token": token,
         },
@@ -161,7 +161,7 @@ function Workout() {
 
     axios
       .post(
-        "https://stronger-server.herokuapp.com/workouts/",
+        `${process.env.REACT_APP_BACKEND_URL}/workouts/`,
         workoutWithFormattedExercises,
         {
           headers: {

@@ -29,7 +29,7 @@ function Exercise() {
   useEffect(() => {
     setIsExercisesLoading(true);
     axios
-      .get("https://stronger-server.herokuapp.com/exercises/", {
+      .get(`${process.env.REACT_APP_BACKEND_URL}/exercises/`, {
         headers: {
           "x-auth-token": token,
         },
@@ -56,7 +56,7 @@ function Exercise() {
   const handleDeleteExercise = (exerciseId) => {
     setIsExercisesLoading(true);
     axios
-      .delete(`https://stronger-server.herokuapp.com/exercises/${exerciseId}`, {
+      .delete(`${process.env.REACT_APP_BACKEND_URL}/exercises/${exerciseId}`, {
         headers: {
           "x-auth-token": token,
         },
@@ -78,7 +78,7 @@ function Exercise() {
     };
 
     axios
-      .post("https://stronger-server.herokuapp.com/exercises/", newExercise, {
+      .post(`${process.env.REACT_APP_BACKEND_URL}/exercises/`, newExercise, {
         headers: {
           "x-auth-token": token,
         },

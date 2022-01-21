@@ -28,7 +28,7 @@ export default function RegistrationForum() {
 
     e.preventDefault();
     axios
-      .post("https://stronger-server.herokuapp.com/auth/signup", {
+      .post(`${process.env.REACT_APP_BACKEND_URL}/auth/signup`, {
         email: user.email,
         password: user.password,
       })
