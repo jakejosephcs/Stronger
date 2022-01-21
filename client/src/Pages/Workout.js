@@ -1,5 +1,4 @@
-import { useEffect, useState, useContext } from "react";
-import { ExericseContext } from "../Context/exerciseContext";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { getCurrentDate } from "../Utils";
@@ -15,13 +14,7 @@ import CloseIcon from "../Assests/CloseIcon";
 import AddIcon from "../Assests/AddIcon";
 
 function Workout() {
-  const {
-    token,
-    exercises: fetchedExercies,
-    isExercisesLoading: isfetchedExerciesLoading,
-    exercisesError: fetchedExerciesError,
-    redirect,
-  } = useContext(ExericseContext);
+  const [token, setToken] = useState(localStorage.getItem("token"));
 
   const [workout, setWorkout] = useState({
     name: "",
@@ -34,13 +27,36 @@ function Workout() {
   const [error, setError] = useState("");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [fetchedExercies, setFetchedExercises] = useState([]);
+  const [fetchedExerciesError, setFetchedExercisesError] = useState("");
+  const [isfetchedExerciesLoading, setIsfetchedExerciesLoading] =
+    useState(false);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (redirect) {
-      navigate("/login");
-    }
+    setIsfetchedExerciesLoading(true);
+    axios
+      .get(`${process.env.REACT_APP_LOCAL_URL}/exercises/`, {
+        headers: {
+          "x-auth-token": token,
+        },
+      })
+      .then((res) => {
+        setFetchedExercises(res.data);
+        setIsfetchedExerciesLoading(false);
+      })
+      .catch((error) => {
+        if (
+          error.response &&
+          (error.response.status === 401 || error.response.status === 403)
+        ) {
+          navigate("/login");
+        } else {
+          setIsfetchedExerciesLoading(false);
+          setFetchedExercisesError("Uh Oh! Something went wrong");
+        }
+      });
   }, []);
 
   const handleUpdateWorkout = (e) => {
@@ -200,8 +216,8 @@ function Workout() {
       return <UICard text="Loading..." />;
     }
 
-    if (fetchedExerciesError) {
-      return <UICard text={"Uh Oh, something went wrong"} />;
+    if (fetchedExerciesError !== "") {
+      return <UICard text={fetchedExerciesError} />;
     }
 
     if (fetchedExercies.length === 0) {
