@@ -1,6 +1,5 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { ExericseContext } from "../Context/exerciseContext";
 import axios from "axios";
 
 import ExerciseCard from "../Components/ExerciseCard";
@@ -12,38 +11,94 @@ import CloseIcon from "../Assests/CloseIcon";
 import LinkIcon from "../Assests/LinkIcon";
 
 function Exercise() {
-  const {
-    token,
-    exercises,
-    isExercisesLoading,
-    exercisesError,
-    handleDeleteExercise,
-    handleCreateNewExercise,
-    createExerciseError,
-    setCreateExerciseError,
-    redirect,
-  } = useContext(ExericseContext);
+  const [token, setToken] = useState(localStorage.getItem("token"));
+
+  // States associated with exercises
+  const [exercises, setExercises] = useState([]);
+  const [isExercisesLoading, setIsExercisesLoading] = useState(false);
+  const [exercisesError, setExercisesError] = useState(false);
 
   // States associated with the modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newExerciseName, setNewExerciseName] = useState("");
+  const [isCreateExerciseLoading, setIsCreateExerciseLoading] = useState(false);
+  const [createExerciseError, setCreateExerciseError] = useState("");
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (redirect) {
-      navigate("/login");
-    }
+    setIsExercisesLoading(true);
+    axios
+      .get(`${process.env.REACT_APP_LOCAL_URL}/exercises/`, {
+        headers: {
+          "x-auth-token": token,
+        },
+      })
+      .then((res) => {
+        setExercises(res.data);
+        setIsExercisesLoading(false);
+        setExercisesError(false);
+      })
+      .catch((error) => {
+        // Redirect the user to /login if they do not have access
+        if (
+          error.response &&
+          (error.response.status === 401 || error.response.status === 403)
+        ) {
+          navigate("/login");
+        } else {
+          setIsExercisesLoading(false);
+          setExercisesError(true);
+        }
+      });
   }, []);
+
+  const handleDeleteExercise = (exerciseId) => {
+    setIsExercisesLoading(true);
+    axios
+      .delete(`${process.env.REACT_APP_LOCAL_URL}/exercises/${exerciseId}`, {
+        headers: {
+          "x-auth-token": token,
+        },
+      })
+      .then((res) => {
+        const filteredExercises = exercises.filter(
+          (exercise) => exercise._id !== exerciseId
+        );
+        setExercises(filteredExercises);
+        setIsExercisesLoading(false);
+      })
+      .catch((e) => setIsExercisesLoading(false));
+  };
+
+  const handleCreateNewExercise = () => {
+    setIsCreateExerciseLoading(true);
+    const newExercise = {
+      name: newExerciseName.toLowerCase(),
+    };
+
+    axios
+      .post(`${process.env.REACT_APP_LOCAL_URL}/exercises/`, newExercise, {
+        headers: {
+          "x-auth-token": token,
+        },
+      })
+      .then((res) => {
+        setExercises((exercises) => exercises.concat(newExercise));
+        setIsModalOpen(false);
+        setIsCreateExerciseLoading(false);
+        setNewExerciseName("");
+      })
+      .catch((err) => {
+        setCreateExerciseError(err.response.data);
+        setIsCreateExerciseLoading(false);
+        setNewExerciseName("");
+      });
+  };
 
   const toggleModal = () => {
     setIsModalOpen((isModalOpen) => !isModalOpen);
     setCreateExerciseError("");
-  };
-
-  const createExercise = () => {
-    handleCreateNewExercise(newExerciseName);
-    toggleModal();
   };
 
   const displayExercises = () => {
@@ -104,8 +159,8 @@ function Exercise() {
               placeholder="Exercise name"
             />
             <ButtonPrimary
-              onClick={createExercise}
-              text={isExercisesLoading ? "Creating..." : "Create"}
+              onClick={handleCreateNewExercise}
+              text={isCreateExerciseLoading ? "Creating..." : "Create"}
             />
           </div>
         </div>
