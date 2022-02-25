@@ -1,4 +1,4 @@
-const express = require("express");
+const router = require("express").Router();
 const authentication = require("../middleware/authentication");
 const {
   getExercises,
@@ -6,8 +6,6 @@ const {
   deleteExercise,
   createExercise,
 } = require("../controller/exerciseController");
-
-const router = express.Router();
 
 // Create a new exercise
 router.post("/", authentication, createExercise);
