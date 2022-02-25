@@ -32,6 +32,9 @@ const getWorkout = async (req, res) => {
   }
 };
 
+// @desc Delete workout based on id
+// @route DELETE /workouts
+// @access Private
 const deleteWorkout = async (req, res) => {
   const workoutId = req.params.id;
   const { user: userId } = req;
@@ -67,6 +70,9 @@ const deleteWorkout = async (req, res) => {
   }
 };
 
+// @desc Create workout
+// @route POST /workouts
+// @access Private
 const createWorkout = async (req, res) => {
   // Input validation using Joi
   const { error } = workoutValidation(req.body);

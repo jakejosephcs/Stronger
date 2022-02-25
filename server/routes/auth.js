@@ -1,9 +1,5 @@
-// Importing required packages
-const express = require("express");
+const router = require("express").Router();
 const { createUser, loginUser } = require("../controller/authController");
-
-// Creating a router using express
-const router = express.Router();
 
 // Signing a user up
 router.post("/signup", createUser);

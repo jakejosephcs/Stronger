@@ -1,5 +1,8 @@
 const User = require("../models/User");
 
+// @desc Get all users
+// @route GET /users
+// @access Public
 const getUsers = async (req, res) => {
   try {
     const allUsers = await User.find();
@@ -9,6 +12,9 @@ const getUsers = async (req, res) => {
   }
 };
 
+// @desc Get user based on id
+// @route GET /users/:id
+// @access Public
 const getUser = async (req, res) => {
   const userId = req.params.id;
   try {

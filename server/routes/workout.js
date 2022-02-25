@@ -1,5 +1,4 @@
-const express = require("express");
-const { workoutValidation } = require("../middleware/validation");
+const router = require("express").Router();
 const authentication = require("../middleware/authentication");
 const {
   getWorkouts,
@@ -7,8 +6,6 @@ const {
   deleteWorkout,
   createWorkout,
 } = require("../controller/workoutController");
-
-const router = express.Router();
 
 // Create a workout
 router.post("/", authentication, createWorkout);

@@ -4,6 +4,9 @@ const User = require("../models/User");
 const { authValidation } = require("../middleware/validation");
 require("dotenv").config();
 
+// @desc Create user
+// @route GET /auth/signup
+// @access Public
 const createUser = async (req, res) => {
   // Input validation using Joi
   const { error } = authValidation(req.body);
@@ -35,6 +38,9 @@ const createUser = async (req, res) => {
   }
 };
 
+// @desc Login user
+// @route GET /auth/login
+// @access Public
 const loginUser = async (req, res) => {
   // Input validation using Joi
   const { error } = authValidation(req.body);
