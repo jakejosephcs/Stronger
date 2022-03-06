@@ -1,8 +1,8 @@
 import React from "react";
-import { ICON_NAME } from "../Utils";
+import { ICON_NAME } from "../utils";
 
 function FeatureCard({ iconName, featureText, isComingSoon }) {
-  const IconComponentName = ICON_NAME[iconName];
+  const Icon = ICON_NAME[iconName];
   return (
     <div
       className={`flex bg-slate-200 py-4 px-3 rounded mb-4 ${
@@ -14,7 +14,7 @@ function FeatureCard({ iconName, featureText, isComingSoon }) {
           coming soon
         </span>
       )}
-      <IconComponentName />
+      <Icon />
       <p className="ml-4">{featureText}</p>
     </div>
   );

@@ -1,38 +1,21 @@
-import CalenderIcon2 from "../Assests/CalenderIcon2";
-import TrashIcon from "../Assests/TrashIcon";
+import { calculateOneRepMax, ICON_NAME } from "../utils";
 
-function WorkoutCard({
-  workout,
-  handleDeleteWorkout,
-  exercises,
-  isDeletingExercise,
-}) {
-  const renderExercises = (exercise) => {
-    const exerciseName = exercises.find(
-      (ex) => ex._id === exercise.exerciseId
-    )?.name;
-
-    const calculateOneRepMax = () => {
-      let oneRepMax = 0;
-      for (let i = 0; i < exercise.weight.length; i++) {
-        let newOneRepMax =
-          exercise.weight[i] / (1.0278 - 0.0278 * exercise.reps[i]);
-        if (newOneRepMax > oneRepMax) {
-          oneRepMax = newOneRepMax;
-        }
-      }
-      return parseInt(oneRepMax);
-    };
-
+function WorkoutCard({ workout, handleDeleteWorkout, isDeletingExercise }) {
+  const [CalenderIconDark, TrashIcon] = [
+    ICON_NAME["CalenderIconDark"],
+    ICON_NAME["TrashIcon"],
+  ];
+  const Exercises = ({ exercise }) => {
+    const oneRepMax = calculateOneRepMax(exercise);
     return (
       <tr>
         <td className="text-center">{exercise.reps.length}</td>
         <td>
           <p className="w-44 overflow-hidden text-ellipses truncate text-center">
-            {exerciseName}
+            {exercise.exerciseName}
           </p>
         </td>
-        <td className="text-center">{calculateOneRepMax()}</td>
+        <td className="text-center">{oneRepMax}</td>
       </tr>
     );
   };
@@ -46,7 +29,7 @@ function WorkoutCard({
         </button>
       </div>
       <div className="flex ">
-        <CalenderIcon2 />
+        <CalenderIconDark />
         <span className="ml-1 text-sm">{workout.date}</span>
       </div>
       <table>
@@ -58,7 +41,9 @@ function WorkoutCard({
           </tr>
         </thead>
         <tbody>
-          {workout.exercises.map((exercise) => renderExercises(exercise))}
+          {workout.exercises.map((exercise) => (
+            <Exercises key={exercise._id} exercise={exercise} />
+          ))}
         </tbody>
       </table>
     </div>

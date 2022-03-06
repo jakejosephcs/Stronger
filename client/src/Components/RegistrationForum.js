@@ -1,20 +1,25 @@
-// #TO DO:
-// - Create reusable hooks that can be used between log in and sign up
-// - Add logic to handle error, loading and success states
-
-import { useState } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import authService from "../services/auth-service";
 
 export default function RegistrationForum() {
   const [user, setUser] = useState({
     email: "",
     password: "",
   });
-  const navigate = useNavigate();
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
+  // Redirect the user if they are logged in
+  useEffect(() => {
+    const user = authService.getCurrentUser();
+    if (user) {
+      navigate("/home");
+    }
+  }, []);
+
+  // Update the email/password of the user
   const handleUserChange = (e) => {
     setError("");
     setUser({
@@ -23,18 +28,15 @@ export default function RegistrationForum() {
     });
   };
 
+  // Sign the user in if valid credentials
   const handleFormSubmit = (e) => {
     setIsLoading(true);
-
     e.preventDefault();
-    axios
-      .post(`${process.env.REACT_APP_LOCAL_URL}/auth/signup`, {
-        email: user.email,
-        password: user.password,
-      })
-      .then((res) => {
+    authService
+      .signup(user.email, user.password)
+      .then(() => {
         setIsLoading(false);
-        navigate("/");
+        navigate("/login");
       })
       .catch((err) => {
         setIsLoading(false);

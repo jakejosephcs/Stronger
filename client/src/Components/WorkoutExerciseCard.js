@@ -1,5 +1,5 @@
 import React from "react";
-import DeleteIcon from "../Assests/DeleteIcon";
+import { ICON_NAME } from "../utils";
 
 function WorkoutExerciseCard({
   exercise,
@@ -8,6 +8,7 @@ function WorkoutExerciseCard({
   handleAddSet,
   handleRemoveExerciseFromWorkout,
 }) {
+  const DeleteIcon = ICON_NAME["DeleteIcon"];
   return (
     <div className="bg-slate-200 px-4 py-4 rounded mx-3 w-72 max-w-xs mt-5">
       <div className="flex justify-between ">
@@ -27,7 +28,7 @@ function WorkoutExerciseCard({
         <tbody>
           {exercise.reps.map((ex, idx) => {
             return (
-              <tr className="b-5">
+              <tr key={idx} className="b-5">
                 <td>#{idx + 1}</td>
                 <td className="pl-3">
                   <input
