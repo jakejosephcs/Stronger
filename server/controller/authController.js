@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const JWT = require("jsonwebtoken");
 const User = require("../models/User");
 const { authValidation } = require("../middleware/validation");
@@ -20,8 +20,8 @@ const createUser = async (req, res) => {
 
   try {
     // Hashing the password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const salt = await bcrypt.genSaltSync(10);
+    const hashedPassword = await bcrypt.hashSync(password, salt);
 
     // Create a new user
     const newUser = new User({
@@ -54,7 +54,10 @@ const loginUser = async (req, res) => {
     if (!user) return res.status(400).send("Invalid email or password");
 
     // Checking if the password provided is correct
-    const isUserPasswordCorrect = await bcrypt.compare(password, user.password);
+    const isUserPasswordCorrect = await bcrypt.compareSync(
+      password,
+      user.password
+    );
     if (!isUserPasswordCorrect)
       return res.status(400).send("Invalid email or password");
 
