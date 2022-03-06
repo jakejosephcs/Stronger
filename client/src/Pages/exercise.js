@@ -1,17 +1,19 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import axios from "axios";
+import { ICON_NAME } from "../utils";
+import authService from "../services/auth-service";
+import exerciseService from "../services/exercise-service";
 
-import ExerciseCard from "../Components/ExerciseCard";
-import UICard from "../Components/UICard";
-import ButtonPrimary from "../Components/ButtonPrimary";
-import ButtonNav from "../Components/ButtonNav";
-import Container from "../Components/Container";
-import CloseIcon from "../Assests/CloseIcon";
-import LinkIcon from "../Assests/LinkIcon";
+import ExerciseCard from "../components/ExerciseCard";
+import UICard from "../components/shared/UICard";
+import ButtonPrimary from "../components/shared/ButtonPrimary";
+import ButtonNav from "../components/shared/ButtonNav";
+import Container from "../components/shared/Container";
+import Modal from "../components/shared/Modal";
 
 function Exercise() {
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const LinkIcon = ICON_NAME["LinkIcon"];
+  const navigate = useNavigate();
 
   // States associated with exercises
   const [exercises, setExercises] = useState([]);
@@ -24,20 +26,13 @@ function Exercise() {
   const [isCreateExerciseLoading, setIsCreateExerciseLoading] = useState(false);
   const [createExerciseError, setCreateExerciseError] = useState("");
 
-  const navigate = useNavigate();
-
+  // Get all exercises and validate user on component mount
   useEffect(() => {
     setIsExercisesLoading(true);
-    axios
-      .get(`${process.env.REACT_APP_LOCAL_URL}/exercises/`, {
-        headers: {
-          "x-auth-token": token,
-        },
-      })
+    exerciseService
+      .getExercises(authService.getCurrentUser())
       .then((res) => {
-        setExercises(res.data);
-        setIsExercisesLoading(false);
-        setExercisesError(false);
+        setExercises(res);
       })
       .catch((error) => {
         // Redirect the user to /login if they do not have access
@@ -47,28 +42,26 @@ function Exercise() {
         ) {
           navigate("/login");
         } else {
-          setIsExercisesLoading(false);
           setExercisesError(true);
         }
+      })
+      .finally(() => {
+        setIsExercisesLoading(false);
       });
   }, []);
 
   const handleDeleteExercise = (exerciseId) => {
     setIsExercisesLoading(true);
-    axios
-      .delete(`${process.env.REACT_APP_LOCAL_URL}/exercises/${exerciseId}`, {
-        headers: {
-          "x-auth-token": token,
-        },
-      })
-      .then((res) => {
-        const filteredExercises = exercises.filter(
-          (exercise) => exercise._id !== exerciseId
+    exerciseService
+      .deleteExercise(authService.getCurrentUser(), exerciseId)
+      .then(() => {
+        setExercises(
+          exercises.filter((exercise) => exercise._id !== exerciseId)
         );
-        setExercises(filteredExercises);
-        setIsExercisesLoading(false);
       })
-      .catch((e) => setIsExercisesLoading(false));
+      .finally(() => {
+        setIsExercisesLoading(false);
+      });
   };
 
   const handleCreateNewExercise = () => {
@@ -76,21 +69,16 @@ function Exercise() {
     const newExercise = {
       name: newExerciseName.toLowerCase(),
     };
-
-    axios
-      .post(`${process.env.REACT_APP_LOCAL_URL}/exercises/`, newExercise, {
-        headers: {
-          "x-auth-token": token,
-        },
-      })
+    exerciseService
+      .createExercise(authService.getCurrentUser(), newExercise)
       .then((res) => {
-        setExercises((exercises) => exercises.concat(newExercise));
+        setExercises((exercises) => exercises.concat(res));
         setIsModalOpen(false);
-        setIsCreateExerciseLoading(false);
-        setNewExerciseName("");
       })
       .catch((err) => {
         setCreateExerciseError(err.response.data);
+      })
+      .finally(() => {
         setIsCreateExerciseLoading(false);
         setNewExerciseName("");
       });
@@ -101,7 +89,7 @@ function Exercise() {
     setCreateExerciseError("");
   };
 
-  const displayExercises = () => {
+  const ExerciseCards = () => {
     if (isExercisesLoading) {
       return <UICard text="Loading..." />;
     }
@@ -134,36 +122,30 @@ function Exercise() {
         </ButtonNav>
         <div className="flex flex-col items-center">
           <h1 className="text-2xl font-bold mb-4">All exercises</h1>
-          {displayExercises()}
+          <ExerciseCards />
         </div>
       </Container>
 
       {isModalOpen && (
-        <div className="bg-black bg-opacity-50 fixed inset-0 flex justify-center items-center h-screen">
-          <div className="bg-gray-200 max-w-sm flex flex-col mx-auto items-center px-6 py-6 relative rounded">
-            <button className="absolute top-2 right-2" onClick={toggleModal}>
-              <CloseIcon />
-            </button>
-            <h3 className="mt-2 font-bold mb-3">Create a new exercise</h3>
-            <span className="text-xs flex justify-center mb-2 text-red-500">
-              {createExerciseError}
-            </span>
-            <input
-              className="px-3 py-1 text-sm mb-4"
-              type="text"
-              value={newExerciseName}
-              onChange={(e) => {
-                setNewExerciseName(e.target.value);
-                setCreateExerciseError("");
-              }}
-              placeholder="Exercise name"
-            />
-            <ButtonPrimary
-              onClick={handleCreateNewExercise}
-              text={isCreateExerciseLoading ? "Creating..." : "Create"}
-            />
-          </div>
-        </div>
+        <Modal toggleModal={toggleModal} title="Create a new exercise">
+          <span className="text-xs flex justify-center mb-2 text-red-500">
+            {createExerciseError}
+          </span>
+          <input
+            className="px-3 py-1 text-sm mb-4"
+            type="text"
+            value={newExerciseName}
+            onChange={(e) => {
+              setNewExerciseName(e.target.value);
+              setCreateExerciseError("");
+            }}
+            placeholder="Exercise name"
+          />
+          <ButtonPrimary
+            onClick={handleCreateNewExercise}
+            text={isCreateExerciseLoading ? "Creating..." : "Create"}
+          />
+        </Modal>
       )}
     </>
   );

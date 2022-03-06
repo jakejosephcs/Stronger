@@ -1,6 +1,6 @@
 import React from "react";
 
-function CalenderIcon2() {
+function CalenderIconDark() {
   return (
     <svg
       width="20"
@@ -20,4 +20,4 @@ function CalenderIcon2() {
   );
 }
 
-export default CalenderIcon2;
+export default CalenderIconDark;

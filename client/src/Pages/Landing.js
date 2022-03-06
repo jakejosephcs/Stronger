@@ -1,48 +1,48 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import Container from "../Components/Container";
-import ButtonPrimary from "../Components/ButtonPrimary";
-import FeatureCard from "../Components/FeatureCard";
+import authService from "../services/auth-service";
+
+import Container from "../components/shared/Container";
+import ButtonPrimary from "../components/shared/ButtonPrimary";
+import FeatureCard from "../components/FeatureCard";
+
+const FEATURES = [
+  {
+    iconName: "NoteIcon",
+    featureText: "Track sets, reps and weight",
+    isComingSoon: false,
+  },
+  {
+    iconName: "CalenderIconLight",
+    featureText: "View previous workouts",
+    isComingSoon: false,
+  },
+  {
+    iconName: "AddIcon",
+    featureText: "Add your own exercises",
+    isComingSoon: false,
+  },
+  {
+    iconName: "GraphIcon",
+    featureText: "Comprehensive statistics",
+    isComingSoon: true,
+  },
+];
 
 function Landing() {
-  const [token, setToken] = useState(null);
   const navigate = useNavigate();
+  const [currentUser, setCurrentUser] = useState(undefined);
 
   useEffect(() => {
-    const localStorageToken = localStorage.getItem("token");
-    if (localStorageToken !== "") {
-      setToken(localStorageToken);
+    const user = authService.getCurrentUser();
+    if (user) {
+      setCurrentUser(user);
     }
   }, []);
 
-  const clearLocalStorage = () => {
-    localStorage.setItem("token", "");
-    setToken("");
+  const handleLogout = () => {
+    authService.logout();
     navigate("/login");
-  };
-
-  const RenderButtons = ({ userToken }) => {
-    if (!userToken) {
-      return (
-        <section className="flex flex-col mb-10">
-          <ButtonPrimary
-            text="Register"
-            onClick={() => navigate("/registration")}
-          />
-          <ButtonPrimary text="Login" onClick={() => navigate("/login")} />
-        </section>
-      );
-    }
-    return (
-      <section className="flex flex-col mb-10">
-        <ButtonPrimary text="Workout" onClick={() => navigate("/home")} />
-        <ButtonPrimary
-          text="Logout"
-          color="bg-red-600"
-          onClick={clearLocalStorage}
-        />
-      </section>
-    );
   };
 
   return (
@@ -54,22 +54,28 @@ function Landing() {
         <div className="text-3xl">Be Consistent</div>
         <div className="text-3xl">See Results</div>
       </section>
-      <RenderButtons userToken={token} />
+      <section className="flex flex-col mb-5">
+        <ButtonPrimary
+          text={currentUser ? "Workout" : "Register"}
+          onClick={() => navigate(currentUser ? "/home" : "/registration")}
+        />
+        <ButtonPrimary
+          text={currentUser ? "Logout" : "Login"}
+          color={currentUser ? "bg-red-600" : null}
+          onClick={currentUser ? handleLogout : () => navigate("/login")}
+        />
+      </section>
       <section>
-        <FeatureCard
-          iconName="NoteIcon"
-          featureText="Track sets, reps and weight"
-        />
-        <FeatureCard
-          iconName="CalenderIcon"
-          featureText="View previous workouts"
-        />
-        <FeatureCard iconName="AddIcon" featureText="Add your own exercises" />
-        <FeatureCard
-          iconName="GraphIcon"
-          featureText="Comprehensive statistics"
-          isComingSoon={true}
-        />
+        {FEATURES.map(({ iconName, featureText, isComingSoon }) => {
+          return (
+            <FeatureCard
+              key={featureText}
+              iconName={iconName}
+              featureText={featureText}
+              isComingSoon={isComingSoon}
+            />
+          );
+        })}
       </section>
     </Container>
   );

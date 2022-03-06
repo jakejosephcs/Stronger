@@ -1,6 +1,6 @@
-import LoginForum from "../Components/LoginForum";
-import AuthHeader from "../Components/AuthHeader";
-import Container from "../Components/Container";
+import LoginForum from "../components/LoginForum";
+import AuthHeader from "../components/shared/AuthHeader";
+import Container from "../components/shared/Container";
 
 function Login() {
   return (

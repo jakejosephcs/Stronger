@@ -1,28 +1,26 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Registration from "./Pages/Registration";
-import Login from "./Pages/Login";
-import Exercises from "./Pages/Exercises";
-import Header from "./Components/Header";
-import Home from "./Pages/Home";
-import Workout from "./Pages/Workout";
-import Landing from "./Pages/Landing";
-import { ExericseContextProvider } from "./Context/exerciseContext";
+
+import Landing from "./pages/landing";
+import Registration from "./pages/registration";
+import Login from "./pages/login";
+import Exercise from "./pages/exercise";
+import Home from "./pages/home";
+import Workout from "./pages/workout";
+import Header from "./components/shared/Header";
 
 function App() {
   return (
-    <ExericseContextProvider>
-      <BrowserRouter>
-        <Header />
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/registration" element={<Registration />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/exercises" element={<Exercises />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/workout" element={<Workout />} />
-        </Routes>
-      </BrowserRouter>
-    </ExericseContextProvider>
+    <BrowserRouter>
+      <Header />
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/registration" element={<Registration />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/exercises" element={<Exercise />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/workout" element={<Workout />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

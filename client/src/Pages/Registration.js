@@ -1,6 +1,6 @@
-import RegistrationForum from "../Components/RegistrationForum";
-import AuthHeader from "../Components/AuthHeader";
-import Container from "../Components/Container";
+import RegistrationForum from "../components/RegistrationForum";
+import AuthHeader from "../components/shared/AuthHeader";
+import Container from "../components/shared/Container";
 
 function Registration() {
   return (
