@@ -1,20 +1,25 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { getCurrentDate } from "../Utils";
-import axios from "axios";
-import Container from "../Components/Container";
-import WorkoutHeader from "../Components/WorkoutHeader";
-import WorkoutExerciseCard from "../Components/WorkoutExerciseCard";
-import ButtonNav from "../Components/ButtonNav";
-import UICard from "../Components/UICard";
-import PlusIcon from "../Assests/PlusIcon";
-import XIcon from "../Assests/XIcon";
-import CloseIcon from "../Assests/CloseIcon";
-import AddIcon from "../Assests/AddIcon";
+import { getCurrentDate, ICON_NAME } from "../utils";
+import authService from "../services/auth-service";
+import exerciseService from "../services/exercise-service";
+import workoutService from "../services/workout-service";
+
+import Container from "../components/shared/Container";
+import WorkoutHeader from "../components/WorkoutHeader";
+import WorkoutExerciseCard from "../components/WorkoutExerciseCard";
+import ButtonNav from "../components/shared/ButtonNav";
+import UICard from "../components/shared/UICard";
+import Modal from "../components/shared/Modal";
 
 function Workout() {
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [PlusIcon, XIcon, AddIcon] = [
+    ICON_NAME["PlusIcon"],
+    ICON_NAME["XIcon"],
+    ICON_NAME["AddIcon"],
+  ];
+  const navigate = useNavigate();
 
   const [workout, setWorkout] = useState({
     name: "",
@@ -27,24 +32,17 @@ function Workout() {
   const [error, setError] = useState("");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [fetchedExercies, setFetchedExercises] = useState([]);
+  const [fetchedExercises, setFetchedExercises] = useState([]);
   const [fetchedExerciesError, setFetchedExercisesError] = useState("");
   const [isfetchedExerciesLoading, setIsfetchedExerciesLoading] =
     useState(false);
 
-  const navigate = useNavigate();
-
   useEffect(() => {
     setIsfetchedExerciesLoading(true);
-    axios
-      .get(`${process.env.REACT_APP_LOCAL_URL}/exercises/`, {
-        headers: {
-          "x-auth-token": token,
-        },
-      })
+    exerciseService
+      .getExercises(authService.getCurrentUser())
       .then((res) => {
-        setFetchedExercises(res.data);
-        setIsfetchedExerciesLoading(false);
+        setFetchedExercises(res);
       })
       .catch((error) => {
         if (
@@ -53,9 +51,11 @@ function Workout() {
         ) {
           navigate("/login");
         } else {
-          setIsfetchedExerciesLoading(false);
           setFetchedExercisesError("Uh Oh! Something went wrong");
         }
+      })
+      .finally(() => {
+        setIsfetchedExerciesLoading(false);
       });
   }, []);
 
@@ -85,18 +85,16 @@ function Workout() {
 
   const handleAddExerciseToWorkout = (exercise) => {
     setError("");
-
+    // Do not add an exercise if already added
     let isExerciseAlreadyAddded = false;
     exercises.forEach((ex) => {
       if (ex._id === exercise._id) {
         isExerciseAlreadyAddded = true;
       }
     });
-
     if (isExerciseAlreadyAddded) {
       return;
     }
-
     setExercises([
       ...exercises,
       {
@@ -147,6 +145,7 @@ function Workout() {
     const formattedExercises = exercises.map((ex) => {
       return {
         exerciseId: ex._id,
+        exerciseName: ex.name,
         reps: ex.reps,
         weight: ex.weight,
       };
@@ -157,32 +156,26 @@ function Workout() {
       exercises: formattedExercises,
     };
 
-    setWorkout(workoutWithFormattedExercises);
-
-    axios
-      .post(
-        `${process.env.REACT_APP_LOCAL_URL}/workouts/`,
-        workoutWithFormattedExercises,
-        {
-          headers: {
-            "x-auth-token": token,
-          },
-        }
+    workoutService
+      .createWorkout(
+        authService.getCurrentUser(),
+        workoutWithFormattedExercises
       )
       .then((res) => {
+        setWorkout(workoutWithFormattedExercises);
         setIsWorkoutSubmitting(false);
         navigate("/home");
       })
       .catch((err) => {
         if (
-          error.response &&
-          (error.response.status === 401 || error.response.status === 403)
+          err.response &&
+          (err.response.status === 401 || err.response.status === 403)
         ) {
           navigate("/login");
         } else {
-          setIsWorkoutSubmitting(false);
           setError(err.response.data);
         }
+        setIsWorkoutSubmitting(false);
       });
   };
 
@@ -211,7 +204,7 @@ function Workout() {
     ));
   };
 
-  const renderModalExercises = () => {
+  const ModalExercises = () => {
     if (isfetchedExerciesLoading) {
       return <UICard text="Loading..." />;
     }
@@ -220,11 +213,11 @@ function Workout() {
       return <UICard text={fetchedExerciesError} />;
     }
 
-    if (fetchedExercies.length === 0) {
+    if (fetchedExercises.length === 0) {
       return <UICard text="0 exercises created" />;
     }
 
-    return fetchedExercies.map((ex) => {
+    return fetchedExercises.map((ex) => {
       return (
         <div
           key={ex._id}
@@ -275,29 +268,23 @@ function Workout() {
       </Container>
 
       {isModalOpen && (
-        <div className="bg-black bg-opacity-50 fixed inset-0 flex justify-center items-center h-screen">
-          <div className="bg-gray-200 max-w-sm flex flex-col mx-auto items-center px-6 py-6 relative rounded">
-            <button className="absolute top-2 right-2" onClick={toggleModal}>
-              <CloseIcon />
-            </button>
-            <h3 className="mt-2 font-bold mb-3">Select an exercise to add</h3>
-            <div
-              className={
-                fetchedExercies.length !== 0
-                  ? "overflow-auto h-40"
-                  : "flex justify-center items-center"
-              }
-            >
-              {renderModalExercises()}
-            </div>
-            <span className="mt-3 text-xs">
-              Don't see it?{" "}
-              <Link to="/exercises" className="text-blue-500 font-bold">
-                Create an exercise
-              </Link>
-            </span>
+        <Modal toggleModal={toggleModal} title="Select an exercise to add">
+          <div
+            className={
+              fetchedExercises.length !== 0
+                ? "overflow-auto h-40"
+                : "flex justify-center items-center"
+            }
+          >
+            <ModalExercises />
           </div>
-        </div>
+          <span className="mt-3 text-xs">
+            Don't see it?{" "}
+            <Link to="/exercises" className="text-blue-500 font-bold">
+              Create an exercise
+            </Link>
+          </span>
+        </Modal>
       )}
     </>
   );

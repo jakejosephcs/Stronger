@@ -1,39 +1,47 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import authService from "../services/auth-service";
 
-import Container from "../Components/Container";
-import ButtonPrimary from "../Components/ButtonPrimary";
-import FeatureCard from "../Components/FeatureCard";
+import Container from "../components/shared/Container";
+import ButtonPrimary from "../components/shared/ButtonPrimary";
+import FeatureCard from "../components/FeatureCard";
 
 const FEATURES = [
   {
     iconName: "NoteIcon",
     featureText: "Track sets, reps and weight",
+    isComingSoon: false,
   },
   {
-    iconName: "CalenderIcon",
+    iconName: "CalenderIconLight",
     featureText: "View previous workouts",
+    isComingSoon: false,
+  },
+  {
+    iconName: "AddIcon",
+    featureText: "Add your own exercises",
+    isComingSoon: false,
   },
   {
     iconName: "GraphIcon",
     featureText: "Comprehensive statistics",
+    isComingSoon: true,
   },
 ];
 
 function Landing() {
-  const [token, setToken] = useState(null);
   const navigate = useNavigate();
+  const [currentUser, setCurrentUser] = useState(undefined);
 
   useEffect(() => {
-    const localStorageToken = localStorage.getItem("token");
-    if (localStorageToken !== "") {
-      setToken(localStorageToken);
+    const user = authService.getCurrentUser();
+    if (user) {
+      setCurrentUser(user);
     }
   }, []);
 
-  const clearLocalStorage = () => {
-    localStorage.setItem("token", "");
-    setToken("");
+  const handleLogout = () => {
+    authService.logout();
     navigate("/login");
   };
 
@@ -48,22 +56,23 @@ function Landing() {
       </section>
       <section className="flex flex-col mb-5">
         <ButtonPrimary
-          text={token ? "Workout" : "Register"}
-          onClick={() => navigate(token ? "/registration" : "/home")}
+          text={currentUser ? "Workout" : "Register"}
+          onClick={() => navigate(currentUser ? "/home" : "/registration")}
         />
         <ButtonPrimary
-          text={token ? "Logout" : "Login"}
-          color={token ? "bg-red-600" : "bg-blue-500"}
-          onClick={clearLocalStorage}
+          text={currentUser ? "Logout" : "Login"}
+          color={currentUser ? "bg-red-600" : null}
+          onClick={currentUser ? handleLogout : () => navigate("/login")}
         />
       </section>
       <section>
-        {FEATURES.map(({ iconName, featureText }) => {
+        {FEATURES.map(({ iconName, featureText, isComingSoon }) => {
           return (
             <FeatureCard
               key={featureText}
               iconName={iconName}
               featureText={featureText}
+              isComingSoon={isComingSoon}
             />
           );
         })}

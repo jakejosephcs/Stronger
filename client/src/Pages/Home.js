@@ -1,36 +1,41 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import axios from "axios";
-import Container from "../Components/Container";
-import WorkoutCard from "../Components/WorkoutCard";
-import UICard from "../Components/UICard";
-import ButtonNav from "../Components/ButtonNav";
-import LinkIcon from "../Assests/LinkIcon";
+import { ICON_NAME } from "../utils";
+import authService from "../services/auth-service";
+import workoutService from "../services/workout-service";
+
+import Container from "../components/shared/Container";
+import WorkoutCard from "../components/WorkoutCard";
+import UICard from "../components/shared/UICard";
+import ButtonNav from "../components/shared/ButtonNav";
+
+const BUTTONS = [
+  {
+    navigateTo: "/workout",
+    buttonText: "Start a new workout",
+  },
+  {
+    navigateTo: "/exercises",
+    buttonText: "View your exercises",
+  },
+];
 
 function Home() {
-  const [token, setToken] = useState(localStorage.getItem("token"));
-
-  const [workouts, setWorkouts] = useState([]);
-  const [isLoadingWorkouts, setIsLoadingWorkouts] = useState(false);
-
-  const [exercises, setExercises] = useState([]);
-  const [isDeletingExercise, setIsDeletingExercise] = useState(false);
-
-  const [error, setError] = useState(false);
-
+  const LinkIcon = ICON_NAME["LinkIcon"];
   const navigate = useNavigate();
 
+  // States associated with workouts
+  const [workouts, setWorkouts] = useState([]);
+  const [isWorkoutsLoading, setisWorkoutsLoading] = useState(false);
+  const [isDeletingWorkouts, setIsDeletingWorkouts] = useState(false);
+  const [error, setError] = useState(false);
+
   useEffect(() => {
-    setIsLoadingWorkouts(true);
-    axios
-      .get(`${process.env.REACT_APP_LOCAL_URL}/workouts/`, {
-        headers: {
-          "x-auth-token": token,
-        },
-      })
+    setisWorkoutsLoading(true);
+    workoutService
+      .getWorkouts(authService.getCurrentUser())
       .then((res) => {
-        setWorkouts(res.data);
-        setIsLoadingWorkouts(false);
+        setWorkouts(res);
       })
       .catch((error) => {
         if (
@@ -39,43 +44,26 @@ function Home() {
         ) {
           navigate("/login");
         } else {
-          setIsLoadingWorkouts(false);
           setError(true);
         }
+      })
+      .finally(() => {
+        setisWorkoutsLoading(false);
       });
   }, []);
 
-  useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_LOCAL_URL}/exercises/`, {
-        headers: {
-          "x-auth-token": token,
-        },
+  const handleDeleteWorkout = (w) => {
+    setIsDeletingWorkouts(true);
+    workoutService
+      .deleteWorkout(authService.getCurrentUser(), w._id)
+      .then(() => {
+        setWorkouts(workouts.filter((workout) => workout._id !== w._id));
       })
-      .then((res) => {
-        setExercises(res.data);
-      });
-  }, []);
-
-  const handleDeleteWorkout = (workout) => {
-    setIsDeletingExercise(true);
-    axios
-      .delete(`${process.env.REACT_APP_LOCAL_URL}/workouts/${workout._id}`, {
-        headers: {
-          "x-auth-token": token,
-        },
-      })
-      .then((res) => {
-        setWorkouts(workouts.filter((w) => w._id !== workout._id));
-        setIsDeletingExercise(false);
-      })
-      .catch((e) => {
-        setIsDeletingExercise(false);
-      });
+      .finally(() => setIsDeletingWorkouts(false));
   };
 
-  const componentToRender = () => {
-    if (isLoadingWorkouts) {
+  const WorkoutCards = () => {
+    if (isWorkoutsLoading) {
       return <UICard text="Loading..." />;
     }
 
@@ -92,22 +80,26 @@ function Home() {
         key={workout._id}
         workout={workout}
         handleDeleteWorkout={handleDeleteWorkout}
-        exercises={exercises}
-        isDeletingExercise={isDeletingExercise}
+        isDeletingWorkouts={isDeletingWorkouts}
       />
     ));
   };
 
   return (
     <Container>
-      <ButtonNav navigateTo="/workout" buttonText="Start a new workout">
-        <LinkIcon />
-      </ButtonNav>
-      <ButtonNav navigateTo="/exercises" buttonText="View your exercises">
-        <LinkIcon />
-      </ButtonNav>
+      {BUTTONS.map(({ navigateTo, buttonText }) => {
+        return (
+          <ButtonNav
+            navigateTo={navigateTo}
+            buttonText={buttonText}
+            key={buttonText}
+          >
+            <LinkIcon />
+          </ButtonNav>
+        );
+      })}
       <h1 className="text-2xl font-bold my-4">Completed workouts</h1>
-      {componentToRender()}
+      <WorkoutCards />
     </Container>
   );
 }
